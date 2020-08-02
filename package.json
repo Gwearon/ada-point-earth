@@ -1,0 +1,15 @@
+{
+  "name": "shelley-globe",
+  "version": "0.7.1",
+  "description": "List of Shelley locations.",
+  "main": "index.html",
+  "dependencies": {
+    "unirest": "^0.6.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Gwearon",
+  "license": "ISC"
+}
