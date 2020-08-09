@@ -1,85 +1,83 @@
 <head>
-    <style> body { margin: 0; } </style>
-  
-    <script src="//unpkg.com/three"></script>
-    <script src="//unpkg.com/three/examples/js/controls/TrackballControls.js"></script>
-    <script src="//unpkg.com/three-globe"></script>
-    <!--<script src="../../dist/three-globe.js"></script>-->
-  </head>
-  
-  <body>
-    <div id="globeViz"></div>
-  
+    <style>
+        body {
+            margin: 0;
+        }
+    </style>
+
+    <script src="/lib/globe.gl.min.js"></script>
+</head>
+
+<body>
+    <div id="globe"></div>
+
     <script>
-      const onInit = (data) => {
-        // Gen random data
-        const gData = data.map((file) => ({
-          lat: file.latitude,
-          lng: file.longitude,
-          size: Math.random() * 1,
-          color: ['red', 'white', 'blue', 'green'][Math.round(Math.random() * 3)],
-          text: file.ip
-        }));
+        const initialization = ([pools, contryPolygons, populatedPlaces]) => {
 
-        debugger;
+            const lPoolData = pools.map(pool => {
+                return {
+                    text: '',
+                    lat: pool.geo.lat,
+                    lng: pool.geo.long,
+                    size: 0.5,
+                    dotRadius: 0.3,
+                    color: 'rgb(240, 20, 30)',//'rgba(255, 165, 0, 0.80)'
+                    altitude: 0.006
+                }
+            })
 
-        const Globe = new ThreeGlobe()
-          .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
-          .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
-          .labelsData(gData)
-          .labelText(d => `${d.text}`)
-          .labelSize('size')
-          .labelDotRadius(d => d.size / 5)
-          .labelColor('color');
-    
-        // custom globe material
-        const globeMaterial = Globe.globeMaterial();
-        globeMaterial.bumpScale = 10;
-        new THREE.TextureLoader().load('//unpkg.com/three-globe/example/img/earth-water.png', texture => {
-          globeMaterial.specularMap = texture;
-          globeMaterial.specular = new THREE.Color('grey');
-          globeMaterial.shininess = 15;
-        });
+            const lPopulatedPlacesData = populatedPlaces.features.map(populatedPlace => {
+                return {
+                    text: populatedPlace.properties.name,
+                    lat: populatedPlace.properties.latitude,
+                    lng: populatedPlace.properties.longitude,
+                    size: 0.4,
+                    dotRadius: 0.2,
+                    color: '#eeeeee',
+                    altitude: 0.0055
+                }
+            })
 
-        setTimeout(() => {
-          gData.forEach(d => d.size = Math.random());
-          Globe.pointsData(gData);
-        }, 4000);
-    
-        // Setup renderer
-        const renderer = new THREE.WebGLRenderer();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-        document.getElementById('globeViz').appendChild(renderer.domElement);
-    
-        // Setup scene
-        const scene = new THREE.Scene();
-        scene.add(Globe);
-        scene.add(new THREE.AmbientLight(0xbbbbbb));
-        scene.add(new THREE.DirectionalLight(0xffffff, 0.6));
-    
-        // Setup camera
-        const camera = new THREE.PerspectiveCamera();
-        camera.aspect = window.innerWidth/window.innerHeight;
-        camera.updateProjectionMatrix();
-        camera.position.z = 500;
-    
-        // Add camera controls
-        const tbControls = new THREE.TrackballControls(camera, renderer.domElement);
-        tbControls.minDistance = 101;
-        tbControls.rotateSpeed = 5;
-        tbControls.zoomSpeed = 0.8;
-    
-        // Kick-off renderer
-        (function animate() { // IIFE
-          // Frame cycle
-          tbControls.update();
-          renderer.render(scene, camera);
-          requestAnimationFrame(animate);
-        })();
-      }
+            const lData = lPoolData.concat(lPopulatedPlacesData);
 
-      window.fetch('mainetRelays/topologyGeoInformation.json')
-        .then(response => response.json())
-        .then(onInit)
+            const globeConfig = Globe()
+                .globeImageUrl('/img/earth-blue-marble.jpg')
+                .backgroundImageUrl('/img/night-sky.png')
+                .bumpImageUrl('/img/earth-topology.png')
+
+                .labelsData(lData)
+                .labelLat('lat')
+                .labelLng('lng')
+                .labelText('text')
+                .labelSize('size')
+                .labelDotRadius('dotRadius')
+                .labelColor('color') //'rgba(255, 165, 0, 0.75)')
+                .labelResolution(2)
+                .labelAltitude(0.0055)
+
+                //.polygonsData(contryPolygons.features)
+                .polygonCapColor(() => 'rgba(200, 0, 0, 0.0)')
+                .polygonSideColor(() => 'rgba(150, 150, 150, 0.4)')
+                .polygonStrokeColor(() => '#aaaaaa')
+                .polygonAltitude(0.005)
+
+            const globe = globeConfig(document.getElementById('globe'))
+
+            setTimeout(() => {
+                globe
+                    .polygonsData(contryPolygons.features)
+                    .polygonCapColor(() => 'rgba(200, 0, 0, 0.0)')
+                    .polygonSideColor(() => 'rgba(150, 150, 150, 0.4)')
+                    .polygonStrokeColor(() => '#aaaaaa')
+                    .polygonAltitude(0.005)
+            }, 0)
+
+        }
+
+        Promise.all([
+            window.fetch('mainetRelays/augmentedPools.json').then(res => res.json()),
+            window.fetch('geodata/countryPolygons.json').then(res => res.json()),
+            window.fetch('geodata/populatedPlaces.json').then(res => res.json())
+        ]).then(initialization)
     </script>
-  </body>
+</body>

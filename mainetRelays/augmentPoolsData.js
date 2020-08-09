@@ -1,18 +1,21 @@
-var os = require("os")
+const os = require("os")
 const fs = require('fs')
 const requestPromise = require('request-promise')
 const nsLookup = require('nslookup')
 
-const continents = require('../geodata/continents.json')
-const countries = require('../geodata/countries.json')
+const continents = require(__dirname + '/../geodata/continents.json')
+const countries = require(__dirname + '/../geodata/countries.json')
 
-const poolsPath = './pools.json';
-const augmentedPoolsPath = './augmentedPools.json'
+const poolsPath = __dirname + '/pools.json';
+const augmentedPoolsPath = __dirname + '/augmentedPools.json'
+const errorsLogPath = __dirname + "../errors.log"
 const encoding = 'utf8'
 
 const myArgs = process.argv.slice(2);
 const startOffset = !!myArgs[0] ? myArgs[0]: 0
-const pools = require(poolsPath).rows.slice(startOffset, 5)
+const endOffset = !!myArgs[1] ? myArgs[1]: Infinity
+
+const pools = require(poolsPath).rows.slice(startOffset, endOffset)
 
 const sleep = () => { return new Promise(resolve => setTimeout(resolve, 500)) }
 const isIp = str => { return /^(([1-9]?\d|1\d\d|2[0-4]\d|25[0-5])(\.(?!$)|$)){4}$/.test(str) }
@@ -69,7 +72,7 @@ const getAugmentedPoolData = async (pool, retry) => {
             // augment with continent information
             geo.continent = continents[countries[geo.code].continent]
         } catch {
-            geo.continent = 'Unknown'
+            geo.continent = ''
         }
 
         const cPool = {...pool}
@@ -102,7 +105,7 @@ const mapSeries = async (pools) => {
             augmentedPool = await getAugmentedPoolData(pool, 1); // try twice
             augmentedPool.index = i
         } catch (e) {
-            fs.appendFileSync("../errors.log", [pool.hash, ' ', e.message, os.EOL].join(''), encoding, outputError)
+            fs.appendFileSync(errorsLogPath, [pool.hash, ' ', e.message, os.EOL].join(''), encoding, outputError)
         }
 
         await sleep() // do some sleep to not overload the sys with requests
