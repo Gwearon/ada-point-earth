@@ -4,8 +4,11 @@
             margin: 0;
         }
     </style>
-
-    <script src="/lib/globe.gl.min.js"></script>
+    <!-- <script src="/lib/globe.gl.min.js"></script> -->
+    <!-- <script src="//unpkg.com/globe.gl"></script> -->
+    <script src="/lib/globe.gl.js"></script>
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
 </head>
 
 <body>
@@ -18,10 +21,10 @@
                 return {
                     text: '',
                     lat: pool.geo.lat,
-                    lng: pool.geo.long,
+                    long: pool.geo.long,
                     size: 0.5,
-                    dotRadius: 0.3,
-                    color: 'rgb(240, 20, 30)',//'rgba(255, 165, 0, 0.80)'
+                    dotRadius: 0.2,
+                    color: 'rgba(255, 165, 0, 0.80)',
                     altitude: 0.006
                 }
             })
@@ -30,7 +33,7 @@
                 return {
                     text: populatedPlace.properties.name,
                     lat: populatedPlace.properties.latitude,
-                    lng: populatedPlace.properties.longitude,
+                    long: populatedPlace.properties.longitude,
                     size: 0.4,
                     dotRadius: 0.2,
                     color: '#eeeeee',
@@ -47,7 +50,7 @@
 
                 .labelsData(lData)
                 .labelLat('lat')
-                .labelLng('lng')
+                .labelLng('long')
                 .labelText('text')
                 .labelSize('size')
                 .labelDotRadius('dotRadius')
@@ -55,23 +58,23 @@
                 .labelResolution(2)
                 .labelAltitude(0.0055)
 
-                //.polygonsData(contryPolygons.features)
+                .polygonsData(contryPolygons.features)
                 .polygonCapColor(() => 'rgba(200, 0, 0, 0.0)')
                 .polygonSideColor(() => 'rgba(150, 150, 150, 0.4)')
                 .polygonStrokeColor(() => '#aaaaaa')
                 .polygonAltitude(0.005)
 
-            const globe = globeConfig(document.getElementById('globe'))
+                .onPolygonClick(onFeatureClick)
 
-            setTimeout(() => {
-                globe
-                    .polygonsData(contryPolygons.features)
-                    .polygonCapColor(() => 'rgba(200, 0, 0, 0.0)')
-                    .polygonSideColor(() => 'rgba(150, 150, 150, 0.4)')
-                    .polygonStrokeColor(() => '#aaaaaa')
-                    .polygonAltitude(0.005)
-            }, 0)
+            const globeDOM = document.getElementById('globe')
+            const globe = globeConfig(globeDOM)
+            const controls = globe.controls()
 
+            globeDOM.addEventListener('mousedown', () => {
+                controls.autoRotate = false
+            })
+            controls.autoRotate = true
+            controls.enableKeys = true
         }
 
         Promise.all([
@@ -79,5 +82,43 @@
             window.fetch('geodata/countryPolygons.json').then(res => res.json()),
             window.fetch('geodata/populatedPlaces.json').then(res => res.json())
         ]).then(initialization)
+
+        function onFeatureClick(pos, event) {
+            console.log(pos, event)
+
+            console.log(event.clientX, event.clientY)
+            console.log(globe.getScreenCoords(pos.lat, pos.long))
+
+            pools.filter(pool => haversineDistance(pool.geo, pos) < 50) // 50km distance
+                .forEach(pool => {
+                    console.log(pool.meta.ticker)
+                })
+        }
+
+        function haversineDistance(coords1, coords2) {
+            const toRad = x => {
+                return x * Math.PI / 180;
+            }
+
+            const lon1 = coords1.lat;
+            const lat1 = coords1.long;
+
+            const lon2 = coords2.lat;
+            const lat2 = coords2.long;
+
+            const R = 6371; // km
+
+            const x1 = lat2 - lat1;
+            const dLat = toRad(x1);
+            const x2 = lon2 - lon1;
+            const dLon = toRad(x2)
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const d = R * c;
+
+            return d;
+        }
     </script>
 </body>
