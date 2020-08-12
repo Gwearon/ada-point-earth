@@ -1,10 +1,6 @@
 <head>
-    <style>
-        body {
-            margin: 0;
-        }
-    </style>
     <!-- <script src="/lib/globe.gl.min.js"></script> -->
+    <link rel="stylesheet" href="/css/main.css">
     <script src="/lib/tap.js"></script>
     <script src="/lib/globe.gl.js"></script>
 
@@ -14,23 +10,41 @@
 </head>
 
 <body style="position: relative;">
-    <button id="menu-pools" style="position: absolute; color: white; z-index: 1; visibility: hidden; pointer-events:none;" class="mdl-button mdl-js-button mdl-button--icon">
-        <i class="material-icons">more_vert</i>
-    </button>
-    <ul class="mdl-menu mdl-js-menu" style="overflow: scroll; max-height: 300px" for="menu-pools">
-    </ul>
+
+    <button id="menu-click-target" class="mdl-button mdl-js-button"></button>
+    <div id="menu-popup" class="mdl-menu mdl-js-menu mdl-menu--bottom-left" for="menu-click-target">
+        <ul>
+        </ul>
+    </div>
 
     <div id="globe">
     </div>
 
+    <div id="snackbar" class="mdl-js-snackbar mdl-snackbar">
+        <div class="mdl-snackbar__text"></div>
+        <button class="mdl-snackbar__action" type="button"></button>
+    </div>
+
     <script>
         const initialization = ([pools, contryPolygons, populatedPlaces]) => {
-            const menu = document.querySelector('#menu-pools')
-            const menuItems = document.querySelector('.mdl-menu');
+            const menu = document.querySelector('#menu-click-target')
+            const menuItems = document.querySelector('#menu-popup')
+            const snackbar = document.querySelector('#snackbar')
 
             const poolColor = 'rgba(255, 255, 0, 0.8)'
-            const poolColorHover = 'rgba(255, 0, 0, 0.8)'
             const cityColor = '#eeeeee'
+            const clickPoolSelectionRadius = 50
+
+            const duplicatedRelays = {}
+            pools = pools.filter(pool => {
+                const key = [pool.meta.ticker, pool.geo.lat, pool.geo.long].join('_')
+                if (!duplicatedRelays[key]) {
+                    duplicatedRelays[key] = 1
+                    return true
+                }
+                duplicatedRelays[key]++
+                return false
+            })
 
             const lPoolData = pools.map(pool => {
                 return {
@@ -40,7 +54,6 @@
                     size: 0.6,
                     dotRadius: 0.3,
                     color: poolColor,
-                    colorHover: poolColorHover,
                     altitude: 0.006,
                     type: 'pool'
                 }
@@ -54,7 +67,6 @@
                     size: 0.4,
                     dotRadius: 0.2,
                     color: cityColor,
-                    colorHover: cityColor,
                     altitude: 0.0055,
                     type: 'country'
                 }
@@ -73,7 +85,7 @@
                 .labelText('text')
                 .labelSize('size')
                 .labelDotRadius('dotRadius')
-                .labelColor('color') //'rgba(255, 165, 0, 0.75)')
+                .labelColor('color')
                 .labelResolution(2)
                 .labelAltitude(0.0055)
 
@@ -82,8 +94,6 @@
                 .polygonSideColor(() => 'rgba(150, 150, 150, 0.4)')
                 .polygonStrokeColor(() => '#aaaaaa')
                 .polygonAltitude(0.005)
-                // .onPolygonClick(onFeatureClick)
-
                 // .polygonLabel(({ properties: d }) => `
                 //     <b>${d.ADMIN} (${d.ISO_A2}):</b> <br />
                 //     GDP: <i>${d.GDP_MD_EST}</i> M$<br/>
@@ -101,19 +111,42 @@
                 pos.long = pos.lng
                 delete pos.lng
 
-                menuItems.innerHTML = ''
-                pools.filter(pool => haversineDistance(pool.geo, pos) < 50) // 50km distance
-                    .forEach(pool => {
+                const menuItemsUl = menuItems.querySelector('ul')
+                menuItemsUl.innerHTML = ''
+                const poolsRadius = pools.filter(pool => haversineDistance(pool.geo, pos) < clickPoolSelectionRadius)
+
+                poolsRadius.forEach(pool => {
                         const poolLi = document.createElement('li')
                         poolLi.classList = 'mdl-menu__item'
                         poolLi.textContent = pool.meta.ticker
-                        menuItems.appendChild(poolLi)
-                        console.log(pool.meta.ticker)
+                        menuItemsUl.appendChild(poolLi)
+                        console.log(pool.meta)
                     })
 
-                menu.style.top = (event.detail.clientY - 30) + 'px';
-                menu.style.left = (event.detail.clientX) + 'px';
-                menu.click()
+                if (!poolsRadius.length) {
+                    var data = {
+                        message: 'No pools in radius',
+                        timeout: 2000,
+                        actionHandler: function() {},
+                        actionText: 'Ok'
+                    }
+                    snackbar.MaterialSnackbar.showSnackbar(data)
+                    return
+                }
+
+                const maxPageX = window.pageXOffset + window.innerWidth;
+                const maxPageY = window.pageYOffset + window.innerHeight;
+                const availableHeight = maxPageY - (globeDOM.offsetTop + event.detail.clientY);
+                const availableWidth = maxPageX - (globeDOM.offsetLeft + event.detail.clientX);
+
+                setTimeout(() => {
+                    console.log(availableWidth, menuItems.offsetWidth, window.innerWidth, event.detail.clientX)
+                    const top = event.detail.clientY - (availableHeight < menuItems.offsetHeight ? menuItems.offsetHeight + 5 : -5)
+                    const left = event.detail.clientX - (availableWidth < menuItems.offsetWidth ? menuItems.offsetWidth + 5 : -5)
+                    menu.style.top = top + 'px';
+                    menu.style.left = left + 'px';
+                    menu.click()
+                }, 0)
             })
 
             globeDOM.addEventListener('dragging', event => {
@@ -156,7 +189,7 @@
         }
 
         Promise.all([
-            window.fetch('mainetRelays/augmentedPools.json').then(res => res.json()),
+            window.fetch('relays/augmentedPools.json').then(res => res.json()),
             window.fetch('geodata/countryPolygons.json').then(res => res.json()),
             window.fetch('geodata/populatedPlaces.json').then(res => res.json())
         ]).then(initialization)

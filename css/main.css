@@ -1,0 +1,17 @@
+body {
+    margin: 0;
+}
+
+#menu-click-target {
+    position: absolute;
+    width: 10px !important;
+    height: 10px !important;
+    z-index: 1;
+    visibility: hidden;
+    pointer-events:none;
+}
+
+#menu-popup {
+    overflow-y: scroll;
+    max-height: 500px;
+}
