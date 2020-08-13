@@ -1,8 +1,10 @@
 <head>
-    <!-- <script src="/lib/globe.gl.min.js"></script> -->
     <link rel="stylesheet" href="/css/main.css">
-    <script src="/lib/tap.js"></script>
+
+    <script src="/lib/tappable.js"></script>
+    <script src="/lib/utils.js"></script>
     <script src="/lib/globe.gl.js"></script>
+    <!-- <script src="/lib/globe.gl.min.js"></script> -->
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
@@ -11,11 +13,11 @@
 
 <body style="position: relative;">
 
-    <button id="menu-click-target" class="mdl-button mdl-js-button"></button>
-    <div id="menu-popup" class="mdl-menu mdl-js-menu mdl-menu--bottom-left" for="menu-click-target">
-        <ul>
-        </ul>
+    <button id="popup-click-target" class="mdl-button mdl-js-button"></button>
+    <div id="pool-popup" class="mdl-menu mdl-js-menu mdl-menu--bottom-left" for="popup-click-target">
     </div>
+
+    <div id="page-spinner" class="mdl-spinner mdl-spinner--single-color mdl-js-spinner is-active"></div>
 
     <div id="globe">
     </div>
@@ -26,10 +28,13 @@
     </div>
 
     <script>
+        const popupClickTarget = document.querySelector('#popup-click-target')
+        const poolPopup = document.querySelector('#pool-popup')
+        const snackbar = document.querySelector('#snackbar')
+        const pageSpinner = document.querySelector('#page-spinner')
+
         const initialization = ([pools, contryPolygons, populatedPlaces]) => {
-            const menu = document.querySelector('#menu-click-target')
-            const menuItems = document.querySelector('#menu-popup')
-            const snackbar = document.querySelector('#snackbar')
+            pageSpinner.classList.remove('hidden')
 
             const poolColor = 'rgba(255, 255, 0, 0.8)'
             const cityColor = '#eeeeee'
@@ -74,6 +79,7 @@
 
             const lData = lPoolData.concat(lPopulatedPlacesData);
 
+            let cameraAltitude = null;
             const globe = Globe({ waitForGlobeReady: true })(document.getElementById('globe'))
                 .globeImageUrl('/img/earth-blue-marble.jpg')
                 .backgroundImageUrl('/img/night-sky.png')
@@ -88,6 +94,14 @@
                 .labelColor('color')
                 .labelResolution(2)
                 .labelAltitude(0.0055)
+
+                .onZoom(({ lat, lng, altitude }) => {
+                    if (cameraAltitude != Utils.round(altitude, 2)) {
+                        cameraAltitude = Utils.round(altitude, 2)
+
+                        poolPopup.MaterialMenu.hide()
+                    }
+                })
 
                 .polygonsData(contryPolygons.features)
                 .polygonCapColor(() => 'rgba(200, 0, 0, 0.0)')
@@ -111,18 +125,7 @@
                 pos.long = pos.lng
                 delete pos.lng
 
-                const menuItemsUl = menuItems.querySelector('ul')
-                menuItemsUl.innerHTML = ''
-                const poolsRadius = pools.filter(pool => haversineDistance(pool.geo, pos) < clickPoolSelectionRadius)
-
-                poolsRadius.forEach(pool => {
-                        const poolLi = document.createElement('li')
-                        poolLi.classList = 'mdl-menu__item'
-                        poolLi.textContent = pool.meta.ticker
-                        menuItemsUl.appendChild(poolLi)
-                        console.log(pool.meta)
-                    })
-
+                const poolsRadius = pools.filter(pool => Utils.haversineDistance(pool.geo, pos) < clickPoolSelectionRadius)
                 if (!poolsRadius.length) {
                     var data = {
                         message: 'No pools in radius',
@@ -134,23 +137,46 @@
                     return
                 }
 
+                const poolsDOM = document.createElement('ul')
+                poolsRadius.forEach(pool => {
+                        const poolDOM = document.createElement('li')
+                        poolDOM.classList = 'mdl-menu__item'
+                        poolDOM.dataset.id = pool.hash
+
+                        const boldDOM = document.createElement('b')
+                        boldDOM.textContent = pool.meta.name
+                        poolDOM.appendChild(boldDOM)
+
+                        const tickerDOM = document.createElement('span')
+                        tickerDOM.textContent = ` [${pool.meta.ticker}]`
+                        poolDOM.appendChild(tickerDOM)
+
+                        poolsDOM.appendChild(poolDOM)
+                    })
+                poolPopup.innerHTML = ''
+                poolPopup.appendChild(poolsDOM)
+
                 const maxPageX = window.pageXOffset + window.innerWidth;
                 const maxPageY = window.pageYOffset + window.innerHeight;
                 const availableHeight = maxPageY - (globeDOM.offsetTop + event.detail.clientY);
                 const availableWidth = maxPageX - (globeDOM.offsetLeft + event.detail.clientX);
 
                 setTimeout(() => {
-                    console.log(availableWidth, menuItems.offsetWidth, window.innerWidth, event.detail.clientX)
-                    const top = event.detail.clientY - (availableHeight < menuItems.offsetHeight ? menuItems.offsetHeight + 5 : -5)
-                    const left = event.detail.clientX - (availableWidth < menuItems.offsetWidth ? menuItems.offsetWidth + 5 : -5)
-                    menu.style.top = top + 'px';
-                    menu.style.left = left + 'px';
-                    menu.click()
+                    const top = event.detail.clientY - (availableHeight / 0.7 < poolPopup.offsetHeight ? poolPopup.offsetHeight + 5 : -5)
+                    const left = event.detail.clientX - (availableWidth < poolPopup.offsetWidth ? poolPopup.offsetWidth + 5 : -5)
+
+                    if (availableHeight / 0.7 >= poolPopup.offsetHeight) {
+                        poolPopup.style.maxHeight = availableHeight - 100
+                    }
+
+                    popupClickTarget.style.top = top + 'px';
+                    popupClickTarget.style.left = left + 'px';
+                    popupClickTarget.click()
                 }, 0)
             })
 
             globeDOM.addEventListener('dragging', event => {
-                menuItems.MaterialMenu.hide()
+                poolPopup.MaterialMenu.hide()
             })
 
             const controls = globe.controls()
@@ -160,32 +186,6 @@
             })
             controls.autoRotate = true
             controls.enableKeys = true
-
-            function haversineDistance(coords1, coords2) {
-                const toRad = x => {
-                    return x * Math.PI / 180;
-                }
-
-                const lon1 = coords1.lat;
-                const lat1 = coords1.long;
-
-                const lon2 = coords2.lat;
-                const lat2 = coords2.long;
-
-                const R = 6371; // km
-
-                const x1 = lat2 - lat1;
-                const dLat = toRad(x1);
-                const x2 = lon2 - lon1;
-                const dLon = toRad(x2)
-                const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2);
-                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                const d = R * c;
-
-                return d;
-            }
         }
 
         Promise.all([
