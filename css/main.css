@@ -3,6 +3,18 @@ body {
     background-color: black;
 }
 
+#search-field {
+    position: absolute;
+    width: 300px;
+    left: calc(50% - 150px);
+    top: 20px;
+    z-index: 1;
+
+    background: #d5d5d5;
+    padding: 0 25px;
+    border-radius: 5px;
+}
+
 #page-spinner {
     position: absolute;
     top: 50vh;

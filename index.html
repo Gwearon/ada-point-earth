@@ -1,6 +1,8 @@
 <head>
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/autocomplete.css">
 
+    <script src="/lib/autocomplete.min.js"></script>
     <script src="/lib/tappable.js"></script>
     <script src="/lib/utils.js"></script>
     <script src="/lib/globe.gl.js"></script>
@@ -12,6 +14,13 @@
 </head>
 
 <body>
+    <div id="search-field">
+        <div class="mdl-textfield mdl-js-textfield">
+            <input class="mdl-textfield__input" type="text" id="sample1">
+            <label class="mdl-textfield__label" for="sample1">Name, Ticker, Country, City, ...</label>
+        </div>
+    </div>
+
     <button id="popup-click-target" class="mdl-button mdl-js-button"></button>
     <div id="pool-popup" class="mdl-menu mdl-js-menu mdl-menu--bottom-left" for="popup-click-target">
     </div>
@@ -127,10 +136,8 @@
                 const poolsRadius = pools.filter(pool => Utils.haversineDistance(pool.geo, pos) < clickPoolSelectionRadius)
                 if (!poolsRadius.length) {
                     var data = {
-                        message: 'No pools in radius',
-                        timeout: 2000,
-                        actionHandler: function() {},
-                        actionText: 'Ok'
+                        message: 'No pools in radius. Create it please. :)',
+                        timeout: 2000
                     }
                     snackbar.MaterialSnackbar.showSnackbar(data)
                     return
@@ -190,6 +197,28 @@
 
             controls.autoRotate = true
             controls.enableKeys = true
+
+            autocomplete({
+                input: document.querySelector('#search-field input'),
+                fetch: (text, update) => {
+                    text = text.toLowerCase();
+                    // you can also use AJAX requests instead of preloaded data
+                    const suggestions = pools.filter(pool => {
+                        if (typeof pool.meta !== 'object') return false
+                        if (pool.meta.name && pool.meta.name.toLowerCase().startsWith(text)) return true
+                        if (pool.meta.ticker && pool.meta.ticker.toLowerCase().startsWith(text)) return true
+                        if (pool.geo.country.toLowerCase().startsWith(text)) return true
+                        if (pool.geo.region.toLowerCase().startsWith(text)) return true
+                        if (pool.geo.city.toLowerCase().startsWith(text)) return true
+                        return false
+                    })
+                    console.log(suggestions.length)
+                    update(suggestions);
+                },
+                onSelect: item => {
+                    console.log(item)
+                }
+            })
         }
 
         Promise.all([
