@@ -1,16 +1,16 @@
 {
-  "name": "shelley-globe",
-  "version": "0.7.1",
-  "description": "List of Shelley locations.",
-  "main": "index.html",
-  "dependencies": {
-    "nslookup": "^1.1.1",
-    "request-promise": "^4.2.6"
-  },
-  "devDependencies": {},
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Gwearon",
-  "license": "ISC"
+    "name": "shelley-globe",
+    "version": "0.7.1",
+    "description": "List of Shelley locations.",
+    "main": "index.html",
+    "dependencies": {
+        "nslookup": "^1.1.1",
+        "request-promise": "^4.2.6"
+    },
+    "devDependencies": {},
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Gwearon",
+    "license": "ISC"
 }
