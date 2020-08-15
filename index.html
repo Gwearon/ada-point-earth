@@ -222,6 +222,7 @@
                     const searchPos = stringOption.toLocaleLowerCase().indexOf(currentValue.toLocaleLowerCase())
                     if (searchPos === -1) {
                         itemElement.textContent = stringOption
+                        return itemElement
                     }
                     const searchPosEnd = searchPos + stringOption.length
 
