@@ -182,7 +182,6 @@
             })
 
             globeDOM.addEventListener('dragging', event => {
-                console.log('dragging')
                 poolPopup.MaterialMenu.hide()
             })
 
@@ -212,12 +211,35 @@
                         if (pool.geo.city.toLowerCase().startsWith(text)) return true
                         return false
                     })
-                    console.log(suggestions.length)
                     update(suggestions);
                 },
-                onSelect: item => {
-                    console.log(item)
-                }
+                onSelect: pool => {
+                    console.log(pool)
+                },
+                render: (pool, currentValue) => {
+                    const itemElement = document.createElement("div");
+                    const stringOption = `${pool.meta.name} [${pool.meta.ticker}]`
+                    const searchPos = stringOption.toLocaleLowerCase().indexOf(currentValue.toLocaleLowerCase())
+                    if (searchPos === -1) {
+                        itemElement.textContent = stringOption
+                    }
+                    const searchPosEnd = searchPos + stringOption.length
+
+                    const firstPart = document.createElement('span')
+                    const boldPart = document.createElement('b')
+                    const lastPart = document.createElement('span')
+
+                    firstPart.textContent = stringOption.substr(0, searchPos)
+                    boldPart.textContent = stringOption.substr(searchPos, currentValue.length)
+                    lastPart.textContent = stringOption.substr(searchPos + currentValue.length)
+
+                    itemElement.appendChild(firstPart)
+                    itemElement.appendChild(boldPart)
+                    itemElement.appendChild(lastPart)
+
+                    return itemElement;
+                },
+                preventSubmit: true
             })
         }
 
