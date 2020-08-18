@@ -1,20 +1,71 @@
-const Popup = (globeDOM, poolPopup, popupClickTarget) => {
+const Popup = ({ globeDOM, poolPopup, popupClickTarget, places }) => {
 
-    const parseData = (data) => {
-        const pools = data.places.filter(place => place.type === 'pool')
-        const countries = data.places.filter(place => place.type === 'country')
-        const populatedPlaces = data.places.filter(place => place.type === 'populatedPlace')
-        return {
-            meta: data.meta,
-            places: pools.concat(countries).concat(populatedPlaces)
+    const countries = places.filter(place => place.type === 'country')
+    const populatedPlaces = places.filter(place => place.type === 'populatedPlace')
+    const pools = places.filter(place => place.type === 'pool')
+
+    const placeType = {
+        POOL: 'pool',
+        COUNTRY: 'country',
+        POPULATED_PLACES: 'populatedPlaces'
+    }
+
+    [
+        {
+            name: 'Ada Point Pool',
+            ticker: 'APP',
+            type: 'pool'
+        },
+        {
+            name: 'Germany',
+            type: 'country'
+        },
+        {
+            name: 'Paris',
+            type: 'populatedPlaces'
+        }
+    ]
+
+    const getSingle = (data) => {
+
+    }
+
+    const getSingleLi = (data) => {
+        const li = document.createElement('li')
+        li.classList = 'mdl-menu__item'
+        switch(data.type) {
+            case placeType.COUNTRY:
+            case placeType.POPULATED_PLACES:
+            case placeType.POOL:
+                li.dataset.id = data.hash
+
+                const boldDOM = document.createElement('b')
+                boldDOM.textContent = data.meta.name
+                li.appendChild(boldDOM)
+
+                const tickerDOM = document.createElement('span')
+                tickerDOM.textContent = ` [${data.meta.ticker}]`
+                li.appendChild(tickerDOM)
+
         }
     }
 
-    const populate = (data, filter) => {
+    const getUl = (data) => {
+        const ul = document.createElement('ul')
+        ul.append(...data.places.map(getSingleLi))
+        return ul
+    }
+
+    const getDom = (data) => {
         const parsedData = parseData(data)
+        const main = parseData.places.length === 1 ? getDOMSingle(data.places[0]) : getDOMUl(data.places)
+
+    }
+
+    const render = (data) => {
 
         const poolsDOM = document.createElement('ul')
-        poolsRadius.forEach(pool => {
+        parsedData.places.forEach(pool => {
             const poolDOM = document.createElement('li')
             poolDOM.classList = 'mdl-menu__item'
             poolDOM.dataset.id = pool.hash
@@ -31,7 +82,6 @@ const Popup = (globeDOM, poolPopup, popupClickTarget) => {
         })
         poolsPopup.innerHTML = ''
         poolsPopup.appendChild(poolsDOM)
-
     }
 
     const show = (x, y) => {

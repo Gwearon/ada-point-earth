@@ -3,51 +3,54 @@ const poolPopup = document.querySelector('#pool-popup')
 const snackbar = document.querySelector('#snackbar')
 const pageSpinner = document.querySelector('#page-spinner')
 
-const initialization = ([pools, contryPolygons, populatedPlaces]) => {
+const initialization = ([pools, countries, populatedPlaces]) => {
     pageSpinner.classList.remove('hidden')
 
     const poolColor = 'rgba(255, 255, 0, 0.8)'
     const cityColor = '#eeeeee'
     const clickPoolSelectionRadiusKm = 50
 
-    const duplicatedRelays = {}
-    pools = pools.filter(pool => {
-        const key = [pool.meta.ticker, pool.geo.lat, pool.geo.long].join('_')
-        if (!duplicatedRelays[key]) {
-            duplicatedRelays[key] = 1
-            return true
-        }
-        duplicatedRelays[key]++
-        return false
+    pools = Utils.removeDuplicates(pools, (pool) => {
+        return [pool.meta.ticker, pool.geo.lat, pool.geo.long].join('_')
     })
 
-    const lPoolData = pools.map(pool => {
+    // create common structure
+    const placesPools = pools.map(pool => {
         return {
-            text: '',
             lat: pool.geo.lat,
             long: pool.geo.long,
-            size: 0.6,
-            dotRadius: 0.3,
-            color: poolColor,
-            altitude: 0.006,
             type: 'pool'
         }
     })
-
-    const lPopulatedPlacesData = populatedPlaces.features.map(populatedPlace => {
+    const placesCountries = countries.features.map(country => {
         return {
-            text: populatedPlace.properties.name,
-            lat: populatedPlace.properties.latitude,
-            long: populatedPlace.properties.longitude,
-            size: 0.4,
-            dotRadius: 0.2,
-            color: cityColor,
-            altitude: 0.0055,
-            type: 'populatedPlace'
+            lat: '',
+            lng: '',
+            type: 'country'
         }
     })
+    const placesPopulatedPlaces = populatedPlaces.features.map(populatedPlace => {
+        return {
+            mapName: populatedPlace.properties.name,
+            lat: populatedPlace.properties.latitude,
+            long: populatedPlace.properties.longitude,
+            type: 'populatePlace'
+        }
+    })
+    const places = [].concat(placesPools, placesCountries, placesPopulatedPlaces)
 
-    const lData = lPoolData.concat(lPopulatedPlacesData);
+    const mapData = places.filter(place => ['pool', 'populatePlace'].includes(place.type)).map(place => {
+        const isPool = place.type === 'pool'
+        return {
+            text: !!place.mapName ? place.mapName : '',
+            lat: place.lat,
+            long: place.long,
+            size: isPool ? 0.6 : 0.4,
+            dotRadius: isPool ? 0.3 : 0.2,
+            color: isPool ? poolColor : cityColor,
+            altitude: isPool ? 0.006 : 0.0055
+        }
+    })
 
     let cameraAltitude = null;
     const globe = Globe({ waitForGlobeReady: true })(document.getElementById('globe'))
@@ -55,7 +58,7 @@ const initialization = ([pools, contryPolygons, populatedPlaces]) => {
         .backgroundImageUrl('/img/night-sky.png')
         .bumpImageUrl('/img/earth-topology.png')
 
-        .labelsData(lData)
+        .labelsData(mapData)
         .labelLat('lat')
         .labelLng('long')
         .labelText('text')
@@ -73,7 +76,7 @@ const initialization = ([pools, contryPolygons, populatedPlaces]) => {
             }
         })
 
-        .polygonsData(contryPolygons.features)
+        .polygonsData(countries.features)
         .polygonCapColor(() => 'rgba(200, 0, 0, 0.0)')
         .polygonSideColor(() => 'rgba(150, 150, 150, 0.4)')
         .polygonStrokeColor(() => '#aaaaaa')
@@ -159,50 +162,8 @@ const initialization = ([pools, contryPolygons, populatedPlaces]) => {
     controls.autoRotate = true
     controls.enableKeys = true
 
-    autocomplete({
-        input: document.querySelector('#search-field input'),
-        fetch: (text, update) => {
-            text = text.toLowerCase();
-            // you can also use AJAX requests instead of preloaded data
-            const suggestions = pools.filter(pool => {
-                if (typeof pool.meta !== 'object') return false
-                if (pool.meta.name && pool.meta.name.toLowerCase().startsWith(text)) return true
-                if (pool.meta.ticker && pool.meta.ticker.toLowerCase().startsWith(text)) return true
-                if (pool.geo.country.toLowerCase().startsWith(text)) return true
-                if (pool.geo.region.toLowerCase().startsWith(text)) return true
-                if (pool.geo.city.toLowerCase().startsWith(text)) return true
-                return false
-            })
-            update(suggestions);
-        },
-        onSelect: pool => {
-            console.log(pool)
-        },
-        render: (pool, currentValue) => {
-            const itemElement = document.createElement("div");
-            const stringOption = `${pool.meta.name} [${pool.meta.ticker}]`
-            const searchPos = stringOption.toLocaleLowerCase().indexOf(currentValue.toLocaleLowerCase())
-            if (searchPos === -1) {
-                itemElement.textContent = stringOption
-                return itemElement
-            }
-            const searchPosEnd = searchPos + stringOption.length
-
-            const firstPart = document.createElement('span')
-            const boldPart = document.createElement('b')
-            const lastPart = document.createElement('span')
-
-            firstPart.textContent = stringOption.substr(0, searchPos)
-            boldPart.textContent = stringOption.substr(searchPos, currentValue.length)
-            lastPart.textContent = stringOption.substr(searchPos + currentValue.length)
-
-            itemElement.appendChild(firstPart)
-            itemElement.appendChild(boldPart)
-            itemElement.appendChild(lastPart)
-
-            return itemElement;
-        },
-        preventSubmit: true
+    searchBar(document.querySelector('#search-field input'), pools, (pool) => {
+        console.log(pool)
     })
 }
 
