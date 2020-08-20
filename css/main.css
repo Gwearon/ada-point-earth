@@ -34,12 +34,11 @@ body {
     pointer-events:none;
 }
 
-#pool-popup {
+#places-popup {
     overflow-y: auto;
     padding: 10px 0 10px 10px;
 }
-
-#pool-popup ul {
+#places-popup ul {
     padding-left: 0;
 }
 

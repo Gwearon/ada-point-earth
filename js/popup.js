@@ -1,101 +1,20 @@
-const Popup = ({ globeDOM, poolPopup, popupClickTarget, places }) => {
+window.Popup = ({ containerBBox, places, snackbar }) => {
 
-    const countries = places.filter(place => place.type === 'country')
-    const populatedPlaces = places.filter(place => place.type === 'populatedPlace')
-    const pools = places.filter(place => place.type === 'pool')
-
-    const placeType = {
-        POOL: 'pool',
-        COUNTRY: 'country',
-        POPULATED_PLACES: 'populatedPlaces'
-    }
-
-    [
-        {
-            name: 'Ada Point Pool',
-            ticker: 'APP',
-            type: 'pool'
-        },
-        {
-            name: 'Germany',
-            type: 'country'
-        },
-        {
-            name: 'Paris',
-            type: 'populatedPlaces'
-        }
-    ]
-
-    const getSingle = (data) => {
-
-    }
-
-    const getSingleLi = (data) => {
-        const li = document.createElement('li')
-        li.classList = 'mdl-menu__item'
-        switch(data.type) {
-            case placeType.COUNTRY:
-            case placeType.POPULATED_PLACES:
-            case placeType.POOL:
-                li.dataset.id = data.hash
-
-                const boldDOM = document.createElement('b')
-                boldDOM.textContent = data.meta.name
-                li.appendChild(boldDOM)
-
-                const tickerDOM = document.createElement('span')
-                tickerDOM.textContent = ` [${data.meta.ticker}]`
-                li.appendChild(tickerDOM)
-
-        }
-    }
-
-    const getUl = (data) => {
-        const ul = document.createElement('ul')
-        ul.append(...data.places.map(getSingleLi))
-        return ul
-    }
-
-    const getDom = (data) => {
-        const parsedData = parseData(data)
-        const main = parseData.places.length === 1 ? getDOMSingle(data.places[0]) : getDOMUl(data.places)
-
-    }
-
-    const render = (data) => {
-
-        const poolsDOM = document.createElement('ul')
-        parsedData.places.forEach(pool => {
-            const poolDOM = document.createElement('li')
-            poolDOM.classList = 'mdl-menu__item'
-            poolDOM.dataset.id = pool.hash
-
-            const boldDOM = document.createElement('b')
-            boldDOM.textContent = pool.meta.name
-            poolDOM.appendChild(boldDOM)
-
-            const tickerDOM = document.createElement('span')
-            tickerDOM.textContent = ` [${pool.meta.ticker}]`
-            poolDOM.appendChild(tickerDOM)
-
-            poolsDOM.appendChild(poolDOM)
-        })
-        poolsPopup.innerHTML = ''
-        poolsPopup.appendChild(poolsDOM)
-    }
+    const popupClickTarget = document.querySelector('#popup-click-target')
+    const placesPopup = document.querySelector('#places-popup')
 
     const show = (x, y) => {
         const maxPageX = window.pageXOffset + window.innerWidth;
         const maxPageY = window.pageYOffset + window.innerHeight;
-        const availableHeight = maxPageY - (globeDOM.offsetTop + y);
-        const availableWidth = maxPageX - (globeDOM.offsetLeft + x);
+        const availableHeight = maxPageY - (containerBBox.top + y);
+        const availableWidth = maxPageX - (containerBBox.left + x);
 
         setTimeout(() => {
-            const top = y - (availableHeight / 0.7 < poolPopup.offsetHeight ? poolPopup.offsetHeight + 5 : -5)
-            const left = x - (availableWidth < poolPopup.offsetWidth ? poolPopup.offsetWidth + 5 : -5)
+            const top = y - (availableHeight / 0.7 < placesPopup.offsetHeight ? placesPopup.offsetHeight + 5 : -5)
+            const left = x - (availableWidth < placesPopup.offsetWidth ? placesPopup.offsetWidth + 5 : -5)
 
-            if (availableHeight / 0.7 >= poolPopup.offsetHeight) {
-                poolPopup.style.maxHeight = availableHeight - 100
+            if (availableHeight / 0.7 >= placesPopup.offsetHeight) {
+                placesPopup.style.maxHeight = availableHeight - 100
             }
 
             popupClickTarget.style.top = top + 'px';
@@ -104,9 +23,70 @@ const Popup = ({ globeDOM, poolPopup, popupClickTarget, places }) => {
         }, 0)
     }
 
-    const hide = () => {
-
+    const showDetails = (place, searchArgs) => {
+        console.log('show details')
+        placesPopup.innerHTML = ''
+        placesPopup.textContent = place.name
     }
 
-    return { hide, show }
+    const search = (lat, long, type, radiusKm = 50) => {
+        const placesType = places.filter(place => !type || type.includes(place.type))
+        const placesTypeInRadius = placesType.filter(place => Utils.haversineDistance({ lat: place.lat, long: place.long}, { lat, long }) < radiusKm)
+
+        const placesFiltered = placesTypeInRadius.filter(place => !!place.name)
+
+        if (!placesFiltered.length) {
+            var data = {
+                message: 'No pool in radius. Plsease create one. :)',
+                timeout: 2000
+            }
+            if (!snackbar.MaterialSnackbar.active) {
+                snackbar.MaterialSnackbar.showSnackbar(data)
+            }
+            return false
+        }
+
+        if (placesFiltered.length === 1) {
+            showDetails(placesFiltered[0])
+            return true
+        }
+
+        const placesDOM = document.createElement('ul')
+        placesFiltered.forEach(place => {
+            const placeDOM = document.createElement('li')
+            placeDOM.classList = 'mdl-menu__item'
+            placeDOM.dataset.id = place.hash
+
+            const boldDOM = document.createElement('b')
+            boldDOM.textContent = place.name
+            placeDOM.appendChild(boldDOM)
+
+            if (place.pool) {
+                const tickerDOM = document.createElement('span')
+                tickerDOM.textContent = ` [${place.pool.ticker}]`
+                placeDOM.appendChild(tickerDOM)
+            }
+
+            Utils.clickListener(placeDOM, () => { showDetails(place, arguments) })
+
+            placesDOM.appendChild(placeDOM)
+        })
+
+        placesPopup.innerHTML = ''
+        if (placesFiltered.length) {
+            placesPopup.appendChild(placesDOM)
+            return true
+        }
+        return true
+    }
+
+    const hide = () => {
+        placesPopup.MaterialMenu.hide()
+    }
+
+    return {
+        hide,
+        show,
+        search
+    }
 }

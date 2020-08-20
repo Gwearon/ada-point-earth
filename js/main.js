@@ -10,6 +10,7 @@ const initialization = ([pools, countries, populatedPlaces]) => {
     const cityColor = '#eeeeee'
     const clickPoolSelectionRadiusKm = 50
 
+    // remove same relays on single location as it clogs the interface
     pools = Utils.removeDuplicates(pools, (pool) => {
         return [pool.meta.ticker, pool.geo.lat, pool.geo.long].join('_')
     })
@@ -17,13 +18,18 @@ const initialization = ([pools, countries, populatedPlaces]) => {
     // create common structure
     const placesPools = pools.map(pool => {
         return {
+            name: pool.meta.name,
             lat: pool.geo.lat,
             long: pool.geo.long,
-            type: 'pool'
+            type: 'pool',
+            pool: {
+                ticker: pool.meta.ticker
+            }
         }
     })
     const placesCountries = countries.features.map(country => {
         return {
+            name: country.properties.ADMIN,
             lat: '',
             lng: '',
             type: 'country'
@@ -31,7 +37,7 @@ const initialization = ([pools, countries, populatedPlaces]) => {
     })
     const placesPopulatedPlaces = populatedPlaces.features.map(populatedPlace => {
         return {
-            mapName: populatedPlace.properties.name,
+            name: populatedPlace.properties.name,
             lat: populatedPlace.properties.latitude,
             long: populatedPlace.properties.longitude,
             type: 'populatePlace'
@@ -42,7 +48,7 @@ const initialization = ([pools, countries, populatedPlaces]) => {
     const mapData = places.filter(place => ['pool', 'populatePlace'].includes(place.type)).map(place => {
         const isPool = place.type === 'pool'
         return {
-            text: !!place.mapName ? place.mapName : '',
+            text: isPool ? '' : place.name,
             lat: place.lat,
             long: place.long,
             size: isPool ? 0.6 : 0.4,
@@ -52,8 +58,10 @@ const initialization = ([pools, countries, populatedPlaces]) => {
         }
     })
 
-    let cameraAltitude = null;
-    const globe = Globe({ waitForGlobeReady: true })(document.getElementById('globe'))
+    const globeDOM = document.querySelector('#globe')
+    const popup = Popup({ containerBBox: globeDOM.getBoundingClientRect() , places, snackbar })
+
+    const globe = Globe({ waitForGlobeReady: true })(globeDOM)
         .globeImageUrl('/img/earth-blue-marble.jpg')
         .backgroundImageUrl('/img/night-sky.png')
         .bumpImageUrl('/img/earth-topology.png')
@@ -69,10 +77,10 @@ const initialization = ([pools, countries, populatedPlaces]) => {
         .labelAltitude(0.0055)
 
         .onZoom(({ lat, lng, altitude }) => {
-            if (cameraAltitude != Utils.round(altitude, 2)) {
-                cameraAltitude = Utils.round(altitude, 2)
+            if (globe.cameraAltitude != Utils.round(altitude, 2)) {
+                globe.cameraAltitude = Utils.round(altitude, 2)
 
-                poolPopup.MaterialMenu.hide()
+                popup.hide()
             }
         })
 
@@ -87,78 +95,25 @@ const initialization = ([pools, countries, populatedPlaces]) => {
         //     Population: <i>${d.POP_EST}</i>
         //     `)
 
-    const globeDOM = document.getElementById('globe')
-
     Tappable(globeDOM)
     globeDOM.addEventListener('tap', event => {
         const pos = globe.toGlobeCoords(event.detail.clientX, event.detail.clientY)
         if (pos === null) {
             return
         }
-        pos.long = pos.lng
-        delete pos.lng
 
-        const poolsRadius = pools.filter(pool => Utils.haversineDistance(pool.geo, pos) < clickPoolSelectionRadiusKm)
-        if (!poolsRadius.length) {
-            var data = {
-                message: 'No pools in radius. Create it please. :)',
-                timeout: 2000
-            }
-            snackbar.MaterialSnackbar.showSnackbar(data)
-            return
+        var hasData = popup.search(pos.lat, pos.lng)
+        if (hasData) {
+            popup.show(event.detail.clientX, event.detail.clientY)
         }
-
-        const poolsDOM = document.createElement('ul')
-        poolsRadius.forEach(pool => {
-                const poolDOM = document.createElement('li')
-                poolDOM.classList = 'mdl-menu__item'
-                poolDOM.dataset.id = pool.hash
-
-                const boldDOM = document.createElement('b')
-                boldDOM.textContent = pool.meta.name
-                poolDOM.appendChild(boldDOM)
-
-                const tickerDOM = document.createElement('span')
-                tickerDOM.textContent = ` [${pool.meta.ticker}]`
-                poolDOM.appendChild(tickerDOM)
-
-                poolsDOM.appendChild(poolDOM)
-            })
-        poolPopup.innerHTML = ''
-        poolPopup.appendChild(poolsDOM)
-
-        const maxPageX = window.pageXOffset + window.innerWidth;
-        const maxPageY = window.pageYOffset + window.innerHeight;
-        const availableHeight = maxPageY - (globeDOM.offsetTop + event.detail.clientY);
-        const availableWidth = maxPageX - (globeDOM.offsetLeft + event.detail.clientX);
-
-        setTimeout(() => {
-            const top = event.detail.clientY - (availableHeight / 0.7 < poolPopup.offsetHeight ? poolPopup.offsetHeight + 5 : -5)
-            const left = event.detail.clientX - (availableWidth < poolPopup.offsetWidth ? poolPopup.offsetWidth + 5 : -5)
-
-            if (availableHeight / 0.7 >= poolPopup.offsetHeight) {
-                poolPopup.style.maxHeight = availableHeight - 100
-            }
-
-            popupClickTarget.style.top = top + 'px';
-            popupClickTarget.style.left = left + 'px';
-            popupClickTarget.click()
-        }, 0)
     })
 
     globeDOM.addEventListener('dragging', event => {
-        poolPopup.MaterialMenu.hide()
+        popup.hide()
     })
 
     const controls = globe.controls()
-
-    const events = ['mousedown', 'touchstart'];
-    events.forEach(eventName => {
-        globeDOM.addEventListener(eventName, () => {
-            controls.autoRotate = false
-        })
-    })
-
+    Utils.clickListener(globeDOM, () => { controls.autoRotate = false })
     controls.autoRotate = true
     controls.enableKeys = true
 
