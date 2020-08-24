@@ -1,6 +1,5 @@
 window.Popup = ({ containerBBox, places, snackbar }) => {
 
-    const popupClickTarget = document.querySelector('#popup-click-target')
     const placesPopup = document.querySelector('#places-popup')
 
     const show = (x, y) => {
@@ -17,19 +16,30 @@ window.Popup = ({ containerBBox, places, snackbar }) => {
                 placesPopup.style.maxHeight = availableHeight - 100
             }
 
-            popupClickTarget.style.top = top + 'px';
-            popupClickTarget.style.left = left + 'px';
-            popupClickTarget.click()
+            placesPopup.style.top = top + 'px'
+            placesPopup.style.left = left + 'px'
+            placesPopup.style.display = 'block'
         }, 0)
     }
 
-    const showDetails = (place, searchArgs) => {
+    const showDetails = (place, searchArguments) => {
         console.log('show details')
-        placesPopup.innerHTML = ''
-        placesPopup.textContent = place.name
+        placesPopup.innerHTML = `<h7></h7><br/>
+            <a class="gmaps-link" target="_blank">google map link</a>
+        `
+
+        const titleDOM = placesPopup.querySelector('h7')
+        const sufix = place.pool ? ` [${place.pool.ticker}]` : ''
+        titleDOM.textContent = `${place.name}${sufix}`
+
+        const googleMapsLink = placesPopup.querySelector('.gmaps-link')
+        googleMapsLink.href = `https://maps.google.com/?q=${place.lat},${place.long}`
     }
 
     const search = (lat, long, type, radiusKm = 50) => {
+        console.log(lat, long)
+        const searchArguments = [lat, long, type, radiusKm]
+
         const placesType = places.filter(place => !type || type.includes(place.type))
         const placesTypeInRadius = placesType.filter(place => Utils.haversineDistance({ lat: place.lat, long: place.long}, { lat, long }) < radiusKm)
 
@@ -51,10 +61,10 @@ window.Popup = ({ containerBBox, places, snackbar }) => {
             return true
         }
 
-        const placesDOM = document.createElement('ul')
+        placesPopup.innerHTML = '<ul class="places"></ul>'
+        const placesDOM = placesPopup.querySelector('ul')
         placesFiltered.forEach(place => {
             const placeDOM = document.createElement('li')
-            placeDOM.classList = 'mdl-menu__item'
             placeDOM.dataset.id = place.hash
 
             const boldDOM = document.createElement('b')
@@ -67,12 +77,11 @@ window.Popup = ({ containerBBox, places, snackbar }) => {
                 placeDOM.appendChild(tickerDOM)
             }
 
-            Utils.clickListener(placeDOM, () => { showDetails(place, arguments) })
+            Utils.clickListener(placeDOM, () => { showDetails(place, searchArguments) })
 
             placesDOM.appendChild(placeDOM)
         })
 
-        placesPopup.innerHTML = ''
         if (placesFiltered.length) {
             placesPopup.appendChild(placesDOM)
             return true
@@ -81,7 +90,7 @@ window.Popup = ({ containerBBox, places, snackbar }) => {
     }
 
     const hide = () => {
-        placesPopup.MaterialMenu.hide()
+        placesPopup.style.display = 'none';
     }
 
     return {
