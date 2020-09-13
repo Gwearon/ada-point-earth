@@ -8,12 +8,13 @@ const initialization = ([pools, countries, populatedPlaces]) => {
 
     const poolColor = 'rgba(255, 255, 0, 0.8)'
     const cityColor = '#eeeeee'
-    const clickPoolSelectionRadiusKm = 50
 
     // remove same relays on single location as it clogs the interface
     pools = Utils.removeDuplicates(pools, (pool) => {
         return [pool.meta.ticker, pool.geo.lat, pool.geo.long].join('_')
     })
+
+    console.log(pools[0])
 
     // create common structure
     const placesPools = pools.map(pool => {
@@ -23,7 +24,19 @@ const initialization = ([pools, countries, populatedPlaces]) => {
             long: pool.geo.long,
             type: 'pool',
             pool: {
-                ticker: pool.meta.ticker
+                ticker: pool.meta.ticker,
+
+                description: pool.meta.description,
+                homepage: pool.meta.homepage,
+                margin: pool.margin,
+                fixed_cost: pool.fixed_cost,
+                pledge: pool.pledge,
+                hash: pool.hash
+            },
+            geo: {
+                country: pool.geo.country,
+                region: pool.geo.region,
+                city: pool.geo.city
             }
         }
     })
@@ -32,7 +45,10 @@ const initialization = ([pools, countries, populatedPlaces]) => {
             name: country.properties.ADMIN,
             lat: '',
             lng: '',
-            type: 'country'
+            type: 'country',
+            geo: {
+                country: country.properties.ADMIN
+            }
         }
     })
     const placesPopulatedPlaces = populatedPlaces.features.map(populatedPlace => {
@@ -102,7 +118,7 @@ const initialization = ([pools, countries, populatedPlaces]) => {
             return
         }
 
-        var hasData = popup.search(pos.lat, pos.lng)
+        const hasData = popup.search(pos.lat, pos.lng)
         if (hasData) {
             popup.show(event.detail.clientX, event.detail.clientY)
         }
@@ -117,8 +133,21 @@ const initialization = ([pools, countries, populatedPlaces]) => {
     controls.autoRotate = true
     controls.enableKeys = true
 
-    searchBar(document.querySelector('#search-field input'), pools, (pool) => {
-        console.log(pool)
+    searchBar(document.querySelector('#search-field input'), places, (place) => {
+        const hasData = popup.searchPlace(place)
+        if (!hasData) {
+            return;
+        }
+        popup.hide()
+        controls.autoRotate = false
+
+        setTimeout(() => {
+            globe.pointOfView({ lat: place.lat, lng: place.long, altitude: 1 })
+            setTimeout(() => {
+                const coords = globe.getScreenCoords(place.lat, place.long)
+                popup.show(coords.x + 5, coords.y + 5)
+            }, 300)
+        }, 300)
     })
 }
 

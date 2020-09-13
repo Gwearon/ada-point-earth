@@ -1,24 +1,32 @@
-window.searchBar = (input, pools, onSelect) => {
+window.searchBar = (input, places, onSelect) => {
     autocomplete({
         input,
         fetch: (text, update) => {
             text = text.toLowerCase();
             // you can also use AJAX requests instead of preloaded data
-            const suggestions = pools.filter(pool => {
-                if (typeof pool.meta !== 'object') return false
-                if (pool.meta.name && pool.meta.name.toLowerCase().startsWith(text)) return true
-                if (pool.meta.ticker && pool.meta.ticker.toLowerCase().startsWith(text)) return true
-                if (pool.geo.country.toLowerCase().startsWith(text)) return true
-                if (pool.geo.region.toLowerCase().startsWith(text)) return true
-                if (pool.geo.city.toLowerCase().startsWith(text)) return true
+            const suggestions = places.filter(place => {
+                if (place.name && place.name.toLowerCase().startsWith(text)) return true
+
+                const pool = place.pool
+                if (pool) {
+                    if (pool.ticker && pool.ticker.toLowerCase().startsWith(text)) return true
+                }
+
+                const geo = place.geo
+                if (geo) {
+                    if (geo.country && geo.country.toLowerCase().startsWith(text)) return true
+                    if (geo.region && geo.region.toLowerCase().startsWith(text)) return true
+                    if (geo.city && geo.city.toLowerCase().startsWith(text)) return true
+                }
+
                 return false
             })
             update(suggestions);
         },
         onSelect,
-        render: (pool, currentValue) => {
+        render: (place, currentValue) => {
             const itemElement = document.createElement("div");
-            const stringOption = `${pool.meta.name} [${pool.meta.ticker}]`
+            const stringOption = `${place.name}` + (place.pool ? `[${place.pool.ticker}]` : ``)
             const searchPos = stringOption.toLocaleLowerCase().indexOf(currentValue.toLocaleLowerCase())
             if (searchPos === -1) {
                 itemElement.textContent = stringOption
