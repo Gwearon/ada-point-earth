@@ -14,6 +14,7 @@ window.searchBar = (input, places, onSelect) => {
 
                 const geo = place.geo
                 if (geo) {
+                    if (geo.continent && geo.continent.toLowerCase().startsWith(text)) return true
                     if (geo.country && geo.country.toLowerCase().startsWith(text)) return true
                     if (geo.region && geo.region.toLowerCase().startsWith(text)) return true
                     if (geo.city && geo.city.toLowerCase().startsWith(text)) return true
@@ -25,8 +26,10 @@ window.searchBar = (input, places, onSelect) => {
         },
         onSelect,
         render: (place, currentValue) => {
-            const itemElement = document.createElement("div");
-            const stringOption = `${place.name}` + (place.pool ? `[${place.pool.ticker}]` : ``)
+            const itemElement = document.createElement("div")
+            const notAPoolPrefix = place.pool ? ``: `🌎 `
+            const tickerPostfix = place.pool ? `[${place.pool.ticker}]` : ``
+            const stringOption = `${notAPoolPrefix}${place.name}${tickerPostfix}`
             const searchPos = stringOption.toLocaleLowerCase().indexOf(currentValue.toLocaleLowerCase())
             if (searchPos === -1) {
                 itemElement.textContent = stringOption
