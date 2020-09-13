@@ -3,7 +3,7 @@ const poolPopup = document.querySelector('#pool-popup')
 const snackbar = document.querySelector('#snackbar')
 const pageSpinner = document.querySelector('#page-spinner')
 
-const initialization = ([pools, countries, populatedPlaces]) => {
+const initialization = ([pools, countries, countryCapitals, usCountries]) => {
     pageSpinner.classList.remove('hidden')
 
     const poolColor = 'rgba(255, 255, 0, 0.8)'
@@ -13,8 +13,6 @@ const initialization = ([pools, countries, populatedPlaces]) => {
     pools = Utils.removeDuplicates(pools, (pool) => {
         return [pool.meta.ticker, pool.geo.lat, pool.geo.long].join('_')
     })
-
-    console.log(pools[0])
 
     // create common structure
     const placesPools = pools.map(pool => {
@@ -34,34 +32,69 @@ const initialization = ([pools, countries, populatedPlaces]) => {
                 hash: pool.hash
             },
             geo: {
+                continent: pool.geo.continent,
                 country: pool.geo.country,
                 region: pool.geo.region,
                 city: pool.geo.city
             }
         }
     })
-    const placesCountries = countries.features.map(country => {
+
+    const placesUsCountries = Object.values(usCountries).map(usCountry => {
         return {
-            name: country.properties.ADMIN,
-            lat: '',
-            lng: '',
+            name: usCountry.name,
+            lat: usCountry.lat,
+            long: usCountry.long,
             type: 'country',
             geo: {
-                country: country.properties.ADMIN
+                continent: 'North America',
+                country: usCountry.name
             }
         }
     })
-    const placesPopulatedPlaces = populatedPlaces.features.map(populatedPlace => {
+
+    const placesCountries = countryCapitals.map(country => {
         return {
-            name: populatedPlace.properties.name,
-            lat: populatedPlace.properties.latitude,
-            long: populatedPlace.properties.longitude,
-            type: 'populatePlace'
+            name: country.CountryName,
+            lat: country.CapitalLatitude,
+            long: country.CapitalLongitude,
+            type: 'country',
+            geo: {
+                continent: country.ContinentName,
+                country: country.CountryName
+            }
+        }
+    }).concat(placesUsCountries)
+
+    const placesUsCapitals = Object.values(usCountries).map(usCountry => {
+        return {
+            name: usCountry.capital,
+            lat: usCountry.lat,
+            long: usCountry.long,
+            type: 'capital',
+            geo: {
+                continent: 'North America',
+                country: usCountry.name
+            }
         }
     })
-    const places = [].concat(placesPools, placesCountries, placesPopulatedPlaces)
 
-    const mapData = places.filter(place => ['pool', 'populatePlace'].includes(place.type)).map(place => {
+    const placesCapitals = countryCapitals.map(country => {
+        return {
+            name: country.CapitalName,
+            lat: country.CapitalLatitude,
+            long: country.CapitalLongitude,
+            type: 'capital',
+            geo: {
+                continent: country.ContinentName,
+                country: country.CountryName,
+            }
+        }
+    }).concat(placesUsCapitals)
+
+    const places = [].concat(placesPools, placesCountries, placesCapitals)
+
+    const mapData = places.filter(place => ['pool', 'capital'].includes(place.type)).map(place => {
         const isPool = place.type === 'pool'
         return {
             text: isPool ? '' : place.name,
@@ -154,5 +187,6 @@ const initialization = ([pools, countries, populatedPlaces]) => {
 Promise.all([
     window.fetch('relays/augmentedPools.json').then(res => res.json()),
     window.fetch('geodata/countryPolygons.json').then(res => res.json()),
-    window.fetch('geodata/populatedPlaces.json').then(res => res.json())
+    window.fetch('geodata/country-capitals.json').then(res => res.json()),
+    window.fetch('geodata/us_state_capitals.json').then(res => res.json())
 ]).then(initialization)
