@@ -15,31 +15,6 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
     })
 
     // create common structure
-    const placesPools = pools.map(pool => {
-        return {
-            name: pool.meta.name,
-            lat: pool.geo.lat,
-            long: pool.geo.long,
-            type: 'pool',
-            pool: {
-                ticker: pool.meta.ticker,
-
-                description: pool.meta.description,
-                homepage: pool.meta.homepage,
-                margin: pool.margin,
-                fixed_cost: pool.fixed_cost,
-                pledge: pool.pledge,
-                hash: pool.hash
-            },
-            geo: {
-                continent: pool.geo.continent,
-                country: pool.geo.country,
-                region: pool.geo.region,
-                city: pool.geo.city
-            }
-        }
-    })
-
     const placesUsCountries = Object.values(usCountries).map(usCountry => {
         return {
             name: usCountry.name,
@@ -91,6 +66,31 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
             }
         }
     }).concat(placesUsCapitals)
+
+    const placesPools = pools.map(pool => {
+        return {
+            name: pool.meta.name,
+            lat: pool.geo.lat,
+            long: pool.geo.long,
+            type: 'pool',
+            pool: {
+                ticker: pool.meta.ticker,
+
+                description: pool.meta.description,
+                homepage: pool.meta.homepage,
+                margin: pool.margin,
+                fixed_cost: pool.fixed_cost,
+                pledge: pool.pledge,
+                hash: pool.hash
+            },
+            geo: {
+                continent: pool.geo.continent,
+                country: pool.geo.country,
+                region: pool.geo.region,
+                city: pool.geo.city
+            }
+        }
+    })
 
     const places = [].concat(placesPools, placesCountries, placesCapitals)
 

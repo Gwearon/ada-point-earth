@@ -22,9 +22,32 @@ window.Popup = ({ containerBBox, places, snackbar }) => {
         }, 0)
     }
 
+    const createPlacesList = (selectedPlaces, searchArguments) => {
+        return selectedPlaces.map(place => {
+            const placeDOM = document.createElement('li')
+            placeDOM.dataset.id = place.hash
+
+            const boldDOM = document.createElement('b')
+            boldDOM.textContent = place.name
+            placeDOM.appendChild(boldDOM)
+
+            if (place.pool) {
+                const tickerDOM = document.createElement('span')
+                tickerDOM.textContent = ` [${place.pool.ticker}]`
+                placeDOM.appendChild(tickerDOM)
+            } else {
+                boldDOM.textContent = `🌎 ` + boldDOM.textContent
+            }
+
+            Utils.clickListener(placeDOM, () => { showDetails(place, searchArguments) })
+
+            return placeDOM
+        })
+    }
+
     const showDetails = (place, searchArguments) => {
         placesPopup.innerHTML = `
-            <h7></h7><br/>
+            <h7></h7><br/></br>
             <div class="details"></div>
         `
 
@@ -35,7 +58,6 @@ window.Popup = ({ containerBBox, places, snackbar }) => {
         const details = placesPopup.querySelector('.details')
         if (place.type === 'pool') {
             details.innerHTML = `
-                <br/>
                 <p class="description"></p>
                 <ul>
                     <li><a class="homepage" target="_blank">Homepage</a></li>
@@ -57,15 +79,14 @@ window.Popup = ({ containerBBox, places, snackbar }) => {
         }
         if (place.type === 'country') {
             details.innerHTML = `
-                <ul></ul>
+                <ul class="places"></ul>
             `
             const list = details.querySelector('ul')
-            const countryPlacesLis = places.filter(place => pool.type === 'pool' && pool.geo && pool.geo.country === place.name).map(place => {
-                const li = document.createElement('li')
-                li.textContent = place.name
-                return li
-            })
-            list.append.apply(this, countryPlacesLis)
+            const countryPlaces = places.filter(currentPlace => currentPlace.type === 'pool' && currentPlace.geo && currentPlace.geo.country === place.name)
+            const countryPlacesLis = createPlacesList(countryPlaces)
+            list.append.apply(list, countryPlacesLis)
+
+            titleDOM.textContent = `${titleDOM.textContent} (${countryPlacesLis.length})`
         }
         if (place.type === 'populatePlace') {
             details.innerHTML = `
@@ -105,24 +126,7 @@ window.Popup = ({ containerBBox, places, snackbar }) => {
 
         placesPopup.innerHTML = '<ul class="places"></ul>'
         const placesDOM = placesPopup.querySelector('ul')
-        placesFiltered.forEach(place => {
-            const placeDOM = document.createElement('li')
-            placeDOM.dataset.id = place.hash
-
-            const boldDOM = document.createElement('b')
-            boldDOM.textContent = place.name
-            placeDOM.appendChild(boldDOM)
-
-            if (place.pool) {
-                const tickerDOM = document.createElement('span')
-                tickerDOM.textContent = ` [${place.pool.ticker}]`
-                placeDOM.appendChild(tickerDOM)
-            }
-
-            Utils.clickListener(placeDOM, () => { showDetails(place, searchArguments) })
-
-            placesDOM.appendChild(placeDOM)
-        })
+        placesDOM.append.apply(placesDOM, createPlacesList(placesFiltered))
 
         if (placesFiltered.length) {
             placesPopup.appendChild(placesDOM)
@@ -132,7 +136,7 @@ window.Popup = ({ containerBBox, places, snackbar }) => {
     }
 
     const searchPlace = (searchPlace) => {
-        if (searchPlace.type === 'pool') {
+        if (['pool', 'country'].includes(searchPlace.type)) {
             showDetails(searchPlace)
             return true;
         }
