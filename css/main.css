@@ -57,6 +57,25 @@ body {
     background-color: #81ca91;
 }
 
+#app-info {
+    position: absolute;
+    right: 20px;
+    bottom: 20px;
+    color: white;
+    opacity: 0.8;
+    text-transform: none;
+}
+#app-info span.accent {
+    color: rgb(240, 20, 30);
+}
+#app-info span.other {
+    opacity: 0;
+    transition: opacity 3s;
+}
+#app-info span.other.fadeIn {
+    opacity: 1;
+}
+
 ::-webkit-scrollbar {
     width: 10px;
     background-color: #c9c9cb;
