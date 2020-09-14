@@ -54,16 +54,11 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar }) => {
         `
 
         const backButton = placesPopup.querySelector('.back')
+        Utils.clickListener(backButton, back)
+
         const titleDOM = placesPopup.querySelector('.title')
         const sufix = place.pool ? ` [${place.pool.ticker}]` : ''
         titleDOM.textContent = `${place.name}${sufix}`
-
-        // if (hasHistory()) {
-            Utils.clickListener(backButton, back)
-        //     backButton.style = 'display: inline-block';
-        // } else {
-        //     backButton.style = 'display: none'
-        // }
 
         const details = placesPopup.querySelector('.details')
         if (place.type === 'pool') {
@@ -144,9 +139,13 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar }) => {
         }
 
         placesPopup.innerHTML = `
-            <header><span class="title"></span></header><br/>
+            <header><i class="back material-icons">arrow_back_ios</i><span class="title"></span></header><br/>
             <ul class="places"></ul>
         `
+
+        const backButton = placesPopup.querySelector('.back')
+        Utils.clickListener(backButton, back)
+
         placesPopup.querySelector('.title').innerText = `Places in click radius.`
         const placesDOM = placesPopup.querySelector('ul')
         placesDOM.append.apply(placesDOM, createPlacesList(placesFiltered, (place) => {
@@ -182,6 +181,7 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar }) => {
 
     function back() {
         if (!hasHistory()) {
+            hide()
             return;
         }
         const state = history.pop()
