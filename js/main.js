@@ -92,7 +92,13 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
         }
     })
 
-    const places = [].concat(placesPools, placesCountries, placesCapitals)
+    const unsortedPlaces = [].concat(placesPools, placesCountries, placesCapitals)
+    const order = {
+        'country': 1,
+        'capital': 2,
+        'pool': 3
+    }
+    const places = unsortedPlaces.sort((a, b) => order[a.type] > order[b.type] ? 1: -1)
 
     const mapData = places.filter(place => ['pool', 'capital'].includes(place.type)).map(place => {
         const isPool = place.type === 'pool'
@@ -108,7 +114,12 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
     })
 
     const globeDOM = document.querySelector('#globe')
-    const popup = Popup({ containerBBox: globeDOM.getBoundingClientRect() , places, snackbar })
+    const popup = Popup({ 
+        placesPopup: document.querySelector('#places-popup'),
+        containerBBox: globeDOM.getBoundingClientRect() ,
+        places,
+        snackbar
+    })
 
     const globe = Globe({ waitForGlobeReady: true })(globeDOM)
         .globeImageUrl('/img/earth-blue-marble.jpg')

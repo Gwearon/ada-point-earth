@@ -1,6 +1,6 @@
-window.Popup = ({ containerBBox, places, snackbar }) => {
+window.Popup = ({ placesPopup, containerBBox, places, snackbar }) => {
 
-    const placesPopup = document.querySelector('#places-popup')
+    const history = []
 
     const show = (x, y) => {
         const maxPageX = window.pageXOffset + window.innerWidth;
@@ -22,7 +22,7 @@ window.Popup = ({ containerBBox, places, snackbar }) => {
         }, 0)
     }
 
-    const createPlacesList = (selectedPlaces, searchArguments) => {
+    const createPlacesList = (selectedPlaces, callback) => {
         return selectedPlaces.map(place => {
             const placeDOM = document.createElement('li')
             placeDOM.dataset.id = place.hash
@@ -39,21 +39,31 @@ window.Popup = ({ containerBBox, places, snackbar }) => {
                 boldDOM.textContent = `🌎 ` + boldDOM.textContent
             }
 
-            Utils.clickListener(placeDOM, () => { showDetails(place, searchArguments) })
+            Utils.clickListener(placeDOM, () => { callback(place) })
 
             return placeDOM
         })
     }
 
-    const showDetails = (place, searchArguments) => {
+    const showDetails = (place) => {
+        const searchArguments = ['showDetails', place]
+
         placesPopup.innerHTML = `
-            <h7></h7><br/></br>
+            <header><i class="back material-icons">arrow_back_ios</i><span class="title"></span></header><br/>
             <div class="details"></div>
         `
 
-        const titleDOM = placesPopup.querySelector('h7')
+        const backButton = placesPopup.querySelector('.back')
+        const titleDOM = placesPopup.querySelector('.title')
         const sufix = place.pool ? ` [${place.pool.ticker}]` : ''
         titleDOM.textContent = `${place.name}${sufix}`
+
+        // if (hasHistory()) {
+            Utils.clickListener(backButton, back)
+        //     backButton.style = 'display: inline-block';
+        // } else {
+        //     backButton.style = 'display: none'
+        // }
 
         const details = placesPopup.querySelector('.details')
         if (place.type === 'pool') {
@@ -83,15 +93,23 @@ window.Popup = ({ containerBBox, places, snackbar }) => {
             `
             const list = details.querySelector('ul')
             const countryPlaces = places.filter(currentPlace => currentPlace.type === 'pool' && currentPlace.geo && currentPlace.geo.country === place.name)
-            const countryPlacesLis = createPlacesList(countryPlaces)
+            const countryPlacesLis = createPlacesList(countryPlaces, () => {
+                history.push(searchArguments)
+                showDetails(place)
+            })
             list.append.apply(list, countryPlacesLis)
 
-            titleDOM.textContent = `${titleDOM.textContent} (${countryPlacesLis.length})`
+            titleDOM.textContent = `${titleDOM.textContent} (${countryPlacesLis.length}) 🌎`
         }
-        if (place.type === 'populatePlace') {
+        if (place.type === 'capital') {
             details.innerHTML = `
-                <a class="gmaps-link" target="_blank">Google Maps</a>
+                <ul class="places"><li>Capital of ${place.geo.country}.</li></ul>
             `
+            const countryPlace = places.find(currentPlace => currentPlace.type === 'country' && currentPlace.name === place.geo.country)
+            Utils.clickListener(details.querySelector('li'), () => {
+                history.push(searchArguments)
+                showDetails(countryPlace)
+            })
         }
 
         const googleMapsLink = placesPopup.querySelector('.gmaps-link')
@@ -101,7 +119,7 @@ window.Popup = ({ containerBBox, places, snackbar }) => {
     }
 
     const search = (lat, long, type, radiusKm = 50) => {
-        const searchArguments = [lat, long, type, radiusKm]
+        const searchArguments = ['search', lat, long, type, radiusKm]
 
         const placesType = places.filter(place => !type || type.includes(place.type))
         const placesTypeInRadius = placesType.filter(place => Utils.haversineDistance({ lat: place.lat, long: place.long}, { lat, long }) < radiusKm)
@@ -120,13 +138,21 @@ window.Popup = ({ containerBBox, places, snackbar }) => {
         }
 
         if (placesFiltered.length === 1) {
+            history.push(searchArguments)
             showDetails(placesFiltered[0])
             return true
         }
 
-        placesPopup.innerHTML = '<ul class="places"></ul>'
+        placesPopup.innerHTML = `
+            <header><span class="title"></span></header><br/>
+            <ul class="places"></ul>
+        `
+        placesPopup.querySelector('.title').innerText = `Places in click radius.`
         const placesDOM = placesPopup.querySelector('ul')
-        placesDOM.append.apply(placesDOM, createPlacesList(placesFiltered))
+        placesDOM.append.apply(placesDOM, createPlacesList(placesFiltered, (place) => {
+            history.push(searchArguments)
+            showDetails(place)
+        }))
 
         if (placesFiltered.length) {
             placesPopup.appendChild(placesDOM)
@@ -147,10 +173,25 @@ window.Popup = ({ containerBBox, places, snackbar }) => {
         placesPopup.style.display = 'none';
     }
 
-    return {
+    const interface = {
         hide,
         show,
         search,
         searchPlace
     }
+
+    function back() {
+        if (!hasHistory()) {
+            return;
+        }
+        const state = history.pop()
+        const fn = state[0]
+        interface[fn] && interface[fn].apply(interface[fn], state.slice(1))
+    }
+
+    function hasHistory() {
+        return !!history.length
+    }
+
+    return interface
 }

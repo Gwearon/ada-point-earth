@@ -37,8 +37,13 @@ body {
     background-color: white;
     border-radius: 5px;
 }
-#places-popup h7 {
-    font-weight: bolder;
+#places-popup header {
+    font-size: 21px;
+    font-weight: 900;
+}
+#places-popup header i {
+    vertical-align: middle;
+    cursor: pointer;
 }
 #places-popup ul.places {
     padding-left: 0;
