@@ -82,13 +82,15 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar }) => {
             details.querySelector('.adapool').href = `https://adapools.org/pool/${place.pool.hash}`
             details.querySelector('.pooltool').href = `https://pooltool.io/pool/${place.pool.hash}`
         }
-        if (place.type === 'country') {
+        if (['country', 'region'].includes(place.type)) {
+            const geoType = place.type
+
             details.innerHTML = `
                 <ul class="places"></ul>
             `
             const list = details.querySelector('ul')
-            const countryPlaces = places.filter(currentPlace => currentPlace.type === 'pool' && currentPlace.geo && currentPlace.geo.country === place.name)
-            const countryPlacesLis = createPlacesList(countryPlaces, () => {
+            const countryPlaces = places.filter(currentPlace => currentPlace.type === 'pool' && currentPlace.geo && currentPlace.geo[geoType] === place.name)
+            const countryPlacesLis = createPlacesList(countryPlaces, (place) => {
                 history.push(searchArguments)
                 showDetails(place)
             })
@@ -100,7 +102,7 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar }) => {
             details.innerHTML = `
                 <ul class="places"><li>Capital of ${place.geo.country}.</li></ul>
             `
-            const countryPlace = places.find(currentPlace => currentPlace.type === 'country' && currentPlace.name === place.geo.country)
+            const countryPlace = places.find(currentPlace => ['country', 'region'].includes(currentPlace.type) && currentPlace.name === place.geo.country)
             Utils.clickListener(details.querySelector('li'), () => {
                 history.push(searchArguments)
                 showDetails(countryPlace)
@@ -146,7 +148,7 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar }) => {
         const backButton = placesPopup.querySelector('.back')
         Utils.clickListener(backButton, back)
 
-        placesPopup.querySelector('.title').innerText = `Places in click radius.`
+        placesPopup.querySelector('.title').innerText = `Places in click radius. (${placesFiltered.length})`
         const placesDOM = placesPopup.querySelector('ul')
         placesDOM.append.apply(placesDOM, createPlacesList(placesFiltered, (place) => {
             history.push(searchArguments)

@@ -18,15 +18,16 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
     })
 
     // create common structure
-    const placesUsCountries = Object.values(usCountries).map(usCountry => {
+    const placesUsRegions = Object.values(usCountries).map(usCountry => {
         return {
             name: usCountry.name,
             lat: usCountry.lat,
             long: usCountry.long,
-            type: 'country',
+            type: 'region',
             geo: {
                 continent: 'North America',
-                country: usCountry.name
+                country: usCountry.name,
+                region: usCountry.region
             }
         }
     })
@@ -42,7 +43,7 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
                 country: country.CountryName
             }
         }
-    }).concat(placesUsCountries)
+    })
 
     const placesUsCapitals = Object.values(usCountries).map(usCountry => {
         return {
@@ -95,11 +96,12 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
         }
     })
 
-    const unsortedPlaces = [].concat(placesPools, placesCountries, placesCapitals)
+    const unsortedPlaces = [].concat(placesPools, placesCountries, placesUsRegions, placesCapitals)
     const order = {
         'country': 1,
-        'capital': 2,
-        'pool': 3
+        'region': 2,
+        'capital': 3,
+        'pool': 4
     }
     const places = unsortedPlaces.sort((a, b) => order[a.type] > order[b.type] ? 1: -1)
 
