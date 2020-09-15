@@ -148,7 +148,8 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar }) => {
         const backButton = placesPopup.querySelector('.back')
         Utils.clickListener(backButton, back)
 
-        placesPopup.querySelector('.title').innerText = `Places in click radius. (${placesFiltered.length})`
+        const numPools = placesFiltered.filter(place => place.type === 'pool')
+        placesPopup.querySelector('.title').innerText = `Places in click radius. (${numPools.length})`
         const placesDOM = placesPopup.querySelector('ul')
         placesDOM.append.apply(placesDOM, createPlacesList(placesFiltered, (place) => {
             history.push(searchArguments)
