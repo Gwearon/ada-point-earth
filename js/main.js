@@ -2,6 +2,21 @@ const popupClickTarget = document.querySelector('#popup-click-target')
 const poolPopup = document.querySelector('#pool-popup')
 const snackbar = document.querySelector('#snackbar')
 const pageSpinner = document.querySelector('#page-spinner')
+const hoverLabelButton = document.querySelector('#app-hover-labels')
+
+let areHoverLabelsEnabled = true
+Utils.clickListener(hoverLabelButton, () => { 
+    areHoverLabelsEnabled = !areHoverLabelsEnabled
+
+    var data = {
+        message: `Hover data ${areHoverLabelsEnabled ? `enabled`: `disabled`}.`,
+        timeout: 2000
+    }
+
+    if (!snackbar.MaterialSnackbar.active) {
+        snackbar.MaterialSnackbar.showSnackbar(data)
+    }
+})
 
 const initialization = ([pools, countries, countryCapitals, usCountries]) => {
     pageSpinner.classList.remove('hidden')
@@ -27,7 +42,12 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
             return accumulator
         }, {})
 
-    const getCountryPoolNumber = countryName => poolsByCountry[countryName.toLowerCase()] ? poolsByCountry[countryName.toLowerCase()] : 0
+    const getCountryPoolNumber = countryName => {
+        if (countryName && poolsByCountry[countryName.toLowerCase()]) {
+            return poolsByCountry[countryName.toLowerCase()]
+        }
+        return 0
+    }
     const naFormatter = (num1, num2) => num2 !== 0 ? Utils.formatNumber(Math.round(num1 / num2)) : 'N/A'
 
     // create common structure
@@ -167,16 +187,21 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
         .polygonSideColor(() => 'rgba(150, 150, 150, 0.4)')
         .polygonStrokeColor(() => '#aaaaaa')
         .polygonAltitude(0.005)
-        .polygonLabel(({ properties: d }) => `
-                <div class="country-labels">
-                    <b>${d.ADMIN} (${d.ISO_A2}):</b> <br />
-                    Population: <i>${Utils.formatNumber(d.POP_EST)}</i><br/>
-                    GDP: <i>${Utils.formatNumber(d.GDP_MD_EST)}</i> M$<br/>
-                    Num pools: <i>${getCountryPoolNumber(d.NAME_CIAWF)}</i><br/>
-                    Pop/num pools: <i>${naFormatter(d.POP_EST, getCountryPoolNumber(d.NAME_CIAWF))}</i><br/>
-                    GDP/num pools: <i>${naFormatter(d.GDP_MD_EST, getCountryPoolNumber(d.NAME_CIAWF))}</i><br/>
-                </div>
-            `)
+        .polygonLabel(({ properties: d }) => {
+                if (areHoverLabelsEnabled) {
+                    return `
+                        <div class="country-labels">
+                            <b>${d.ADMIN} (${d.ISO_A2}):</b> <br />
+                            Population: <i>${Utils.formatNumber(d.POP_EST)}</i><br/>
+                            GDP: <i>${Utils.formatNumber(d.GDP_MD_EST)}</i> M$<br/>
+                            Num pools: <i>${getCountryPoolNumber(d.NAME_CIAWF)}</i><br/>
+                            Pop/num pools: <i>${naFormatter(d.POP_EST, getCountryPoolNumber(d.NAME_CIAWF))}</i><br/>
+                            GDP/num pools: <i>${naFormatter(d.GDP_MD_EST, getCountryPoolNumber(d.NAME_CIAWF))}</i><br/>
+                        </div>
+                    `
+                }
+                return ``
+            })
 
     Tappable(globeDOM)
     globeDOM.addEventListener('tap', event => {

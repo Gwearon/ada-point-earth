@@ -72,6 +72,13 @@ body {
     opacity: 1;
 }
 
+#app-hover-labels {
+    position: absolute;
+    left: 20px;
+    bottom: 65px;
+    color: white;
+}
+
 #app-help {
     position: absolute;
     left: 20px;
