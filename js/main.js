@@ -190,6 +190,7 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
         popup.hide()
         controls.autoRotate = false
 
+        debugger;
         setTimeout(() => {
             globe.pointOfView({ lat: place.lat, lng: place.long, altitude: 1 })
             setTimeout(() => {
