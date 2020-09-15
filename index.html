@@ -17,7 +17,7 @@
     <div id="search-field">
         <div class="mdl-textfield mdl-js-textfield">
             <input class="mdl-textfield__input" type="text" id="sample1">
-            <label class="mdl-textfield__label" for="sample1">Name, Ticker, Continent, Country, City, ...</label>
+            <label class="mdl-textfield__label" for="sample1">Pool, Ticker, Continent, Country, City, ...</label>
         </div>
     </div>
 
@@ -34,15 +34,56 @@
         <button class="mdl-snackbar__action" type="button"></button>
     </div>
 
+    <button id="app-help" class="mdl-button mdl-js-button mdl-button">
+        <span class="fade-initialize"><i class="back material-icons">help</i>&nbsp;help</span>
+    </button>
+
     <a href="https://adapointpool.com/#faq" target="_blank">
         <button id="app-info" class="mdl-button mdl-js-button mdl-button">
-            <span class="other"><i class="back material-icons">info</i></span>
-            <span class="accent">A</span><span class="other">da </span>
-            <span class="accent">P</span><span class="other">oint </span>
-            <span class="accent">P</span><span class="other">ool </span>
+            <!--<span class="other"><i class="back material-icons">info</i></span>-->
+            <span class="accent">A</span><span class="fade-initialize">da </span>
+            <span class="accent">P</span><span class="fade-initialize">oint </span>
+            <span class="accent">P</span><span class="fade-initialize">ool </span>
         </button>
     </a>
 
+    <div id="app-help-card" class=" hidden mdl-card mdl-shadow--2dp">
+        <div class="mdl-card__title">
+            <h2 class="mdl-card__title-text">Welcome to Pool Me Once</h2>
+        </div>
+        <div class="mdl-card__supporting-text">
+            <ul>
+                <li>Pan the globe</li>
+                <li>Click on the map to show the pools in radius</li>
+                <li>Search for a pool, country in the search bar</li>
+                <li>Consider supporting us by delegating or donating to <a href="https://adapools.org/pool/1cb5d0e006c33ace982a527d4140bc086f99f7d35c27c5ab29600a74" target="_blank">Ada Point Pool</a></li>
+            </ul>
+        </div>
+        <div class="mdl-card__actions mdl-card--border">
+            <a class="mdl-button-get-started mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect">
+                Get Started
+            </a>
+        </div>
+        <div class="mdl-card__menu">
+            <button class="mdl-button mdl-button--icon mdl-js-button mdl-js-ripple-effect">
+                <i class="material-icons">share</i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const helpButton = document.querySelector('#app-help')
+
+        const dialog = document.querySelector('#app-help-card')
+        const closeButton = dialog.querySelector('.mdl-button-get-started')
+        Utils.clickListener(helpButton, () => {
+            dialog.classList.remove('hidden')
+        })
+        Utils.clickListener(closeButton, () => {
+            dialog.classList.add('hidden')
+        })
+    </script>
+    
     <script src="/js/popup.js"></script>
     <script src="/js/searchBar.js"></script>
     <script src="/js/main.js"></script>

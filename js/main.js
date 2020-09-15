@@ -2,12 +2,13 @@ const popupClickTarget = document.querySelector('#popup-click-target')
 const poolPopup = document.querySelector('#pool-popup')
 const snackbar = document.querySelector('#snackbar')
 const pageSpinner = document.querySelector('#page-spinner')
-const appInfo = document.querySelector('#app-info')
 
 const initialization = ([pools, countries, countryCapitals, usCountries]) => {
     pageSpinner.classList.remove('hidden')
-    appInfo.querySelectorAll('.other').forEach(other => other.classList.add('fadeIn'))
-    
+
+    // fade in elements
+    document.querySelectorAll('.fade-initialize').forEach(other => other.classList.add('fade-in'))
+
     const poolColor = 'rgba(255, 255, 0, 0.8)'
     const cityColor = '#eeeeee'
 

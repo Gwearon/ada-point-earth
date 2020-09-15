@@ -57,23 +57,53 @@ body {
     background-color: #81ca91;
 }
 
+.fade-initialize {
+    opacity: 0;
+    transition: opacity 3s;
+}
+.fade-initialize.fade-in {
+    opacity: 1;
+}
+
+#app-help {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    color: white;
+}
+
 #app-info {
     position: absolute;
     right: 20px;
     bottom: 20px;
     color: white;
-    opacity: 0.8;
     text-transform: none;
 }
-#app-info span.accent {
+#app-info .accent {
     color: rgb(240, 20, 30);
 }
-#app-info span.other {
-    opacity: 0;
-    transition: opacity 3s;
+
+#app-help-card.mdl-card {
+    position: absolute;
+    width: 512px;
+    left: 50%;
+    top: 50%;
+    margin-left: -256px;
+    margin-top: -150px;
 }
-#app-info span.other.fadeIn {
-    opacity: 1;
+#app-help-card.hidden {
+    display: none;
+}
+#app-help-card > .mdl-card__title {
+    color: #fff;
+    height: 176px;
+    background: url('../img/banner_right.png') center / cover;
+}
+#app-help-card > .mdl-card__menu {
+    color: #fff;
+}
+#app-help-card .mdl-button-get-started {
+    float: right;
 }
 
 ::-webkit-scrollbar {
