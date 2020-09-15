@@ -13,6 +13,12 @@ Utils.clickListener(hoverLabelButton, () => {
         timeout: 2000
     }
 
+    if (areHoverLabelsEnabled) {
+        hoverLabelButton.querySelector('i').textContent = 'article'
+    } else {
+        hoverLabelButton.querySelector('i').textContent = 'domain_disabled'
+    }
+
     if (!snackbar.MaterialSnackbar.active) {
         snackbar.MaterialSnackbar.showSnackbar(data)
     }
