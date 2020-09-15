@@ -57,6 +57,13 @@ body {
     background-color: #81ca91;
 }
 
+.country-labels {
+    text-shadow:#000 2px 2px 1px;
+}
+.country-labels.hidden {
+    display: none;
+}
+
 .fade-initialize {
     opacity: 0;
     transition: opacity 3s;

@@ -17,6 +17,19 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
         return [pool.meta.ticker, pool.geo.lat, pool.geo.long].join('_')
     })
 
+    const poolsByCountry = pools.reduce((accumulator, pool) => {
+            const countryName = pool.geo.country.toLowerCase()
+            if (!!accumulator[countryName]) {
+                accumulator[countryName]++;
+            } else {
+                accumulator[countryName] = 1;
+            }
+            return accumulator
+        }, {})
+
+    const getCountryPoolNumber = countryName => poolsByCountry[countryName.toLowerCase()] ? poolsByCountry[countryName.toLowerCase()] : 0
+    const naFormatter = (num1, num2) => num2 !== 0 ? Utils.formatNumber(Math.round(num1 / num2)) : 'N/A'
+
     // create common structure
     const placesUsRegions = Object.values(usCountries).map(usCountry => {
         return {
@@ -154,11 +167,16 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
         .polygonSideColor(() => 'rgba(150, 150, 150, 0.4)')
         .polygonStrokeColor(() => '#aaaaaa')
         .polygonAltitude(0.005)
-        // .polygonLabel(({ properties: d }) => `
-        //     <b>${d.ADMIN} (${d.ISO_A2}):</b> <br />
-        //     GDP: <i>${d.GDP_MD_EST}</i> M$<br/>
-        //     Population: <i>${d.POP_EST}</i>
-        //     `)
+        .polygonLabel(({ properties: d }) => `
+                <div class="country-labels">
+                    <b>${d.ADMIN} (${d.ISO_A2}):</b> <br />
+                    Population: <i>${Utils.formatNumber(d.POP_EST)}</i><br/>
+                    GDP: <i>${Utils.formatNumber(d.GDP_MD_EST)}</i> M$<br/>
+                    Num pools: <i>${getCountryPoolNumber(d.NAME_CIAWF)}</i><br/>
+                    Pop/num pools: <i>${naFormatter(d.POP_EST, getCountryPoolNumber(d.NAME_CIAWF))}</i><br/>
+                    GDP/num pools: <i>${naFormatter(d.GDP_MD_EST, getCountryPoolNumber(d.NAME_CIAWF))}</i><br/>
+                </div>
+            `)
 
     Tappable(globeDOM)
     globeDOM.addEventListener('tap', event => {
