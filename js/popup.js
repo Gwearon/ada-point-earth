@@ -141,9 +141,14 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar }) => {
         }
 
         // add country to every radius result
+        const firstPool = placesFiltered.find(place => place.type === 'pool')
+        const hasRegion = placesFiltered.find(place => place.type === 'region')
+        if (!hasRegion) {
+            const regionPlace = places.find(place => place.type === 'region' && place.name === firstPool.geo.region)
+            regionPlace && placesFiltered.unshift(regionPlace)
+        }
         const hasCountry = placesFiltered.find(place => place.type === 'country')
         if (!hasCountry) {
-            const firstPool = placesFiltered.find(place => place.type === 'pool')
             const countryPlace = places.find(place => place.type === 'country' && place.name === firstPool.geo.country)
             countryPlace && placesFiltered.unshift(countryPlace)
         }
