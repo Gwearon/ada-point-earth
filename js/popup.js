@@ -140,6 +140,14 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar }) => {
             return true
         }
 
+        // add country to every radius result
+        const hasCountry = placesFiltered.find(place => place.type === 'country')
+        if (!hasCountry) {
+            const firstPool = placesFiltered.find(place => place.type === 'pool')
+            const countryPlace = places.find(place => place.type === 'country' && place.name === firstPool.geo.country)
+            countryPlace && placesFiltered.unshift(countryPlace)
+        }
+
         placesPopup.innerHTML = `
             <header><i class="back material-icons">arrow_back_ios</i><span class="title"></span></header><br/>
             <ul class="places"></ul>
