@@ -2,27 +2,6 @@ const popupClickTarget = document.querySelector('#popup-click-target')
 const poolPopup = document.querySelector('#pool-popup')
 const snackbar = document.querySelector('#snackbar')
 const pageSpinner = document.querySelector('#page-spinner')
-const hoverLabelButton = document.querySelector('#app-hover-labels')
-
-let areHoverLabelsEnabled = true
-Utils.clickListener(hoverLabelButton, () => { 
-    areHoverLabelsEnabled = !areHoverLabelsEnabled
-
-    var data = {
-        message: `Hover data ${areHoverLabelsEnabled ? `enabled`: `disabled`}.`,
-        timeout: 2000
-    }
-
-    if (areHoverLabelsEnabled) {
-        hoverLabelButton.querySelector('i').textContent = 'article'
-    } else {
-        hoverLabelButton.querySelector('i').textContent = 'domain_disabled'
-    }
-
-    if (!snackbar.MaterialSnackbar.active) {
-        snackbar.MaterialSnackbar.showSnackbar(data)
-    }
-})
 
 const initialization = ([pools, countries, countryCapitals, usCountries]) => {
     pageSpinner.classList.remove('hidden')
@@ -193,21 +172,6 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
         .polygonSideColor(() => 'rgba(150, 150, 150, 0.4)')
         .polygonStrokeColor(() => '#aaaaaa')
         .polygonAltitude(0.005)
-        .polygonLabel(({ properties: d }) => {
-                if (areHoverLabelsEnabled) {
-                    return `
-                        <div class="country-labels">
-                            <b>${d.ADMIN} (${d.ISO_A2}):</b> <br />
-                            Population: <i>${Utils.formatNumber(d.POP_EST)}</i><br/>
-                            GDP: <i>${Utils.formatNumber(d.GDP_MD_EST)}</i> M$<br/>
-                            Num pools: <i>${getCountryPoolNumber(d.NAME_CIAWF)}</i><br/>
-                            Pop/num pools: <i>${naFormatter(d.POP_EST, getCountryPoolNumber(d.NAME_CIAWF))}</i><br/>
-                            GDP/num pools: <i>${naFormatter(d.GDP_MD_EST, getCountryPoolNumber(d.NAME_CIAWF))}</i><br/>
-                        </div>
-                    `
-                }
-                return ``
-            })
 
     Tappable(globeDOM)
     globeDOM.addEventListener('tap', event => {
@@ -247,6 +211,89 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
             }, 300)
         }, 300)
     })
+
+    const simulateEdgesButton = document.querySelector('#app-simulate-edges-labels')
+    let simulateEdges = false
+
+    const simulateRandomEdges = () => {
+        const getRandomPool = () => pools[Math.floor(pools.length * Math.random())]
+        const generateEdge = (startPool) => {
+            const pool2 = getRandomPool()
+            return  {
+                startLat: startPool.geo.lat,
+                startLng: startPool.geo.long,
+                endLat: pool2.geo.lat,
+                endLng: pool2.geo.long,
+                color: ['#f0141e', '#f0141e']
+            }
+        }
+    
+        const arcsData = simulateEdges ? pools.map(generateEdge) : []
+
+        globe
+            .arcsData(arcsData)
+            .arcColor('color')
+            .arcDashLength(() => Math.random())
+            .arcDashGap(() => Math.random())
+            .arcDashAnimateTime(() => Math.random() * 4000 + 500)
+    }
+    
+    Utils.clickListener(simulateEdgesButton, () => {
+        simulateEdges = !simulateEdges
+
+        simulateRandomEdges()
+
+        var data = {
+            message: `Simulate edges ${simulateEdges ? `enabled`: `disabled`}.`,
+            timeout: 2000
+        }
+
+        simulateEdgesButton.querySelector('i').textContent = 'grid_' + (simulateEdges ? 'on' : 'off')
+
+        if (!snackbar.MaterialSnackbar.active) {
+            snackbar.MaterialSnackbar.showSnackbar(data)
+        }
+    })
+
+    const hoverLabelButton = document.querySelector('#app-hover-labels')
+    let areHoverLabelsEnabled = true
+
+    const updateHoverPolygonText = () => {
+        const hoverFn = ({ properties: d }) => {
+            return `
+                <div class="country-labels">
+                    <b>${d.ADMIN} (${d.ISO_A2}):</b> <br />
+                    Population: <i>${Utils.formatNumber(d.POP_EST)}</i><br/>
+                    GDP: <i>${Utils.formatNumber(d.GDP_MD_EST)}</i> M$<br/>
+                    Num pools: <i>${getCountryPoolNumber(d.NAME_CIAWF)}</i><br/>
+                    Pop/num pools: <i>${naFormatter(d.POP_EST, getCountryPoolNumber(d.NAME_CIAWF))}</i><br/>
+                    GDP/num pools: <i>${naFormatter(d.GDP_MD_EST, getCountryPoolNumber(d.NAME_CIAWF))}</i><br/>
+                </div>
+            `
+        }
+
+        globe.polygonLabel(areHoverLabelsEnabled ? hoverFn : () => {})
+    }
+
+    Utils.clickListener(hoverLabelButton, () => {
+        areHoverLabelsEnabled = !areHoverLabelsEnabled
+
+        updateHoverPolygonText()
+
+        var data = {
+            message: `Hover data ${areHoverLabelsEnabled ? `enabled`: `disabled`}.`,
+            timeout: 2000
+        }
+
+        hoverLabelButton.querySelector('i').textContent = areHoverLabelsEnabled ? 'article' : 'domain_disabled'
+
+        if (!snackbar.MaterialSnackbar.active) {
+            snackbar.MaterialSnackbar.showSnackbar(data)
+        }
+    })
+
+    updateHoverPolygonText()
+    simulateRandomEdges()
 }
 
 Promise.all([
