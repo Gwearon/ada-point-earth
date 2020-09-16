@@ -17,24 +17,6 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
         return [pool.meta.ticker, pool.geo.lat, pool.geo.long].join('_')
     })
 
-    const poolsByCountry = pools.reduce((accumulator, pool) => {
-            const countryName = pool.geo.country.toLowerCase()
-            if (!!accumulator[countryName]) {
-                accumulator[countryName]++;
-            } else {
-                accumulator[countryName] = 1;
-            }
-            return accumulator
-        }, {})
-
-    const getCountryPoolNumber = countryName => {
-        if (countryName && poolsByCountry[countryName.toLowerCase()]) {
-            return poolsByCountry[countryName.toLowerCase()]
-        }
-        return 0
-    }
-    const naFormatter = (num1, num2) => num2 !== 0 ? Utils.formatNumber(Math.round(num1 / num2)) : 'N/A'
-
     // create common structure
     const placesUsRegions = Object.values(usCountries).map(usCountry => {
         return {
@@ -195,6 +177,10 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
     controls.autoRotate = true
     controls.enableKeys = true
 
+    //
+    // Search bar
+    //
+
     searchBar(document.querySelector('#search-field input'), places, (place) => {
         const hasData = popup.searchPlace(place)
         if (!hasData) {
@@ -211,6 +197,10 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
             }, 300)
         }, 300)
     })
+
+    //
+    // Simulate random edges
+    //
 
     const simulateEdgesButton = document.querySelector('#app-simulate-edges-labels')
     let simulateEdges = false
@@ -254,6 +244,37 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
             snackbar.MaterialSnackbar.showSnackbar(data)
         }
     })
+    simulateRandomEdges()
+
+    //
+    // Hover text
+    //
+
+    const NAME_CIAWF_FIXES = {
+        "Korea, South": "South Korea"
+    }
+
+    const poolsByCountry = pools.reduce((accumulator, pool) => {
+        const countryName = pool.geo.country.toLowerCase()
+        if (!!accumulator[countryName]) {
+            accumulator[countryName]++;
+        } else {
+            accumulator[countryName] = 1;
+        }
+        return accumulator
+    }, {})
+
+    const getCountryPoolNumber = countryName => {
+        if (!!NAME_CIAWF_FIXES[countryName]) {
+            countryName = NAME_CIAWF_FIXES[countryName]
+        }
+        countryName = countryName.toLowerCase()
+        if (countryName && poolsByCountry[countryName]) {
+            return poolsByCountry[countryName]
+        }
+        return 0
+    }
+    const naFormatter = (num1, num2) => num2 !== 0 ? Utils.formatNumber(Math.round(num1 / num2)) : 'N/A'
 
     const hoverLabelButton = document.querySelector('#app-hover-labels')
     let areHoverLabelsEnabled = true
@@ -291,9 +312,7 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
             snackbar.MaterialSnackbar.showSnackbar(data)
         }
     })
-
     updateHoverPolygonText()
-    simulateRandomEdges()
 }
 
 Promise.all([
