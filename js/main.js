@@ -124,7 +124,7 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
         containerBBox: globeDOM.getBoundingClientRect() ,
         places,
         snackbar,
-        onSearch
+        onPopupChange
     })
 
     const globe = Globe({ waitForGlobeReady: true })(globeDOM)
@@ -268,6 +268,9 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
     }, {})
 
     const getCountryPoolNumber = countryName => {
+        if (!countryName) {
+            return 0
+        }
         if (!!NAME_CIAWF_FIXES[countryName]) {
             countryName = NAME_CIAWF_FIXES[countryName]
         }
@@ -326,11 +329,11 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
     const closeButton = dialog.querySelector('.mdl-button-get-started')
     const showHelp = () => {
         dialog.classList.remove('hidden')
-        onSearch('help')
+        onUrlChange('help')
     }
     const closeHelp = () => {
         dialog.classList.add('hidden')
-        onSearch()
+        onUrlChange()
     }
     Utils.clickListener(helpButton, showHelp)
     Utils.clickListener(closeButton, closeHelp)
@@ -344,18 +347,24 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
         country: 'countries'
     }
 
-    function onSearch(place) {
+    function onUrlChange(newHash) {
+        if (!newHash) {
+            history.replaceState(null, null, document.location.pathname)
+            return
+        }
+        history.replaceState(null, null, document.location.pathname + '#' + newHash)
+    }
+
+    function onPopupChange(place) {
         if (!place) {
             history.replaceState(null, null, document.location.pathname)
             return
         }
-
-        let hash = place
-        if (typeUrlMap[place.type]) {
-            const id = place.type === 'pool' ? place.pool.hash : place.name
-            hash = `${typeUrlMap[place.type]}/${encodeURIComponent(id)}`
+        if (!typeUrlMap[place.type]) {
+            return
         }
-
+        const id = place.type === 'pool' ? place.pool.hash : place.name
+        const hash = `${typeUrlMap[place.type]}/${encodeURIComponent(id)}`
         history.replaceState(null, null, document.location.pathname + '#' + hash)
     }
 

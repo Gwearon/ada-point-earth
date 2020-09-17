@@ -1,5 +1,5 @@
-window.Popup = ({ placesPopup, containerBBox, places, snackbar, onSearch }) => {
-    onSearch = onSearch || function() {}
+window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange }) => {
+    onPopupChange = onPopupChange || function() {}
 
     const history = []
 
@@ -122,7 +122,7 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onSearch }) => {
             googleMapsLink.href = `https://maps.google.com/?q=${place.lat},${place.long}`
         }
 
-        onSearch(place)
+        onPopupChange(place)
     }
 
     const search = (lat, long, type, radiusKm = 50) => {
@@ -153,12 +153,12 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onSearch }) => {
         // add country to every radius result
         const firstPool = placesFiltered.find(place => place.type === 'pool')
         const hasRegion = placesFiltered.find(place => place.type === 'region')
-        if (!hasRegion) {
+        if (firstPool && !hasRegion) {
             const regionPlace = places.find(place => place.type === 'region' && place.name === firstPool.geo.region)
             regionPlace && placesFiltered.unshift(regionPlace)
         }
         const hasCountry = placesFiltered.find(place => place.type === 'country')
-        if (!hasCountry) {
+        if (firstPool && !hasCountry) {
             const countryPlace = places.find(place => place.type === 'country' && place.name === firstPool.geo.country)
             countryPlace && placesFiltered.unshift(countryPlace)
         }
@@ -180,7 +180,7 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onSearch }) => {
         }))
 
         if (placesFiltered.length) {
-            onSearch()
+            onPopupChange()
             placesPopup.appendChild(placesDOM)
             return true
         }
@@ -202,7 +202,7 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onSearch }) => {
         isShown = false
 
         placesPopup.style.display = 'none';
-        onSearch()
+        onPopupChange()
     }
 
     const interface = {
