@@ -123,7 +123,8 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
         placesPopup: document.querySelector('#places-popup'),
         containerBBox: globeDOM.getBoundingClientRect() ,
         places,
-        snackbar
+        snackbar,
+        onSearch
     })
 
     const globe = Globe({ waitForGlobeReady: true })(globeDOM)
@@ -177,11 +178,7 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
     controls.autoRotate = true
     controls.enableKeys = true
 
-    //
-    // Search bar
-    //
-
-    searchBar(document.querySelector('#search-field input'), places, (place) => {
+    const searchPlace = (place) => {
         const hasData = popup.searchPlace(place)
         if (!hasData) {
             return;
@@ -196,7 +193,13 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
                 popup.show(coords.x + 5, coords.y + 5)
             }, 300)
         }, 300)
-    })
+    }
+
+    //
+    // Search bar
+    //
+
+    searchBar(document.querySelector('#search-field input'), places, searchPlace)
 
     //
     // Simulate random edges
@@ -313,6 +316,54 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
         }
     })
     updateHoverPolygonText()
+
+    //
+    // Navigation
+    //
+    const typeUrlMap = {
+        pool: 'pools',
+        region: 'regions',
+        country: 'countries'
+    }
+
+    function onSearch(place) {
+        if (!place) {
+            console.trace()
+            history.replaceState(null, null, document.location.pathname)
+            return
+        }
+
+        if (!typeUrlMap[place.type]) {
+            return
+        }
+
+        const id = place.type === 'pool' ? place.pool.hash : place.name
+        history.replaceState(null, null, document.location.pathname + '#' + `${typeUrlMap[place.type]}/${encodeURIComponent(id)}`)
+    }
+
+    const showPage = function(hash) {
+        if (hash.startsWith(typeUrlMap.pool)) {
+            const poolHash = decodeURIComponent(hash.substring(typeUrlMap.pool.length + 1))
+            const pool = places.find(place => place.type === 'pool' && place.pool.hash === poolHash)
+            searchPlace(pool)
+        }
+        if (hash.startsWith(typeUrlMap.region)) {
+            const regionName = decodeURIComponent(hash.substring(typeUrlMap.region.length + 1))
+            const region = places.find(place => place.type === 'region' && place.geo.region === regionName)
+            searchPlace(region)
+        }
+        if (hash.startsWith(typeUrlMap.country)) {
+            const countryName = decodeURIComponent(hash.substring(typeUrlMap.country.length + 1))
+            const country = places.find(place => place.type === 'country' && place.geo.country === countryName)
+            searchPlace(country)
+        }
+    }
+
+    window.onhashchange = function() {
+        showPage(location.hash.substring(1));
+    }
+
+    showPage(location.hash.substring(1));
 }
 
 Promise.all([

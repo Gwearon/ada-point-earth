@@ -1,8 +1,16 @@
-window.Popup = ({ placesPopup, containerBBox, places, snackbar }) => {
+window.Popup = ({ placesPopup, containerBBox, places, snackbar, onSearch }) => {
+    onSearch = onSearch || function() {}
 
     const history = []
 
+    let isShown = false
+
     const show = (x, y) => {
+        if (isShown) {
+            return
+        }
+        isShown = true
+
         const maxPageX = window.pageXOffset + window.innerWidth;
         const maxPageY = window.pageYOffset + window.innerHeight;
         const availableHeight = maxPageY - (containerBBox.top + y);
@@ -113,6 +121,8 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar }) => {
         if (googleMapsLink) {
             googleMapsLink.href = `https://maps.google.com/?q=${place.lat},${place.long}`
         }
+
+        onSearch(place)
     }
 
     const search = (lat, long, type, radiusKm = 50) => {
@@ -125,7 +135,7 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar }) => {
 
         if (!placesFiltered.length) {
             var data = {
-                message: 'No pool in radius. Plsease create one. :)',
+                message: 'No pool in radius. Please create one. 😊',
                 timeout: 2000
             }
             if (!snackbar.MaterialSnackbar.active) {
@@ -170,6 +180,7 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar }) => {
         }))
 
         if (placesFiltered.length) {
+            onSearch()
             placesPopup.appendChild(placesDOM)
             return true
         }
@@ -185,7 +196,13 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar }) => {
     }
 
     const hide = () => {
+        if (!isShown) {
+            return
+        }
+        isShown = false
+
         placesPopup.style.display = 'none';
+        onSearch()
     }
 
     const interface = {
