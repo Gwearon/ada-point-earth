@@ -318,6 +318,24 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
     updateHoverPolygonText()
 
     //
+    // Help popup
+    //
+
+    const helpButton = document.querySelector('#app-help')
+    const dialog = document.querySelector('#app-help-card')
+    const closeButton = dialog.querySelector('.mdl-button-get-started')
+    const showHelp = () => {
+        dialog.classList.remove('hidden')
+        onSearch('help')
+    }
+    const closeHelp = () => {
+        dialog.classList.add('hidden')
+        onSearch()
+    }
+    Utils.clickListener(helpButton, showHelp)
+    Utils.clickListener(closeButton, closeHelp)
+
+    //
     // Navigation
     //
     const typeUrlMap = {
@@ -328,17 +346,17 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
 
     function onSearch(place) {
         if (!place) {
-            console.trace()
             history.replaceState(null, null, document.location.pathname)
             return
         }
 
-        if (!typeUrlMap[place.type]) {
-            return
+        let hash = place
+        if (typeUrlMap[place.type]) {
+            const id = place.type === 'pool' ? place.pool.hash : place.name
+            hash = `${typeUrlMap[place.type]}/${encodeURIComponent(id)}`
         }
 
-        const id = place.type === 'pool' ? place.pool.hash : place.name
-        history.replaceState(null, null, document.location.pathname + '#' + `${typeUrlMap[place.type]}/${encodeURIComponent(id)}`)
+        history.replaceState(null, null, document.location.pathname + '#' + hash)
     }
 
     const showPage = function(hash) {
@@ -356,6 +374,9 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
             const countryName = decodeURIComponent(hash.substring(typeUrlMap.country.length + 1))
             const country = places.find(place => place.type === 'country' && place.geo.country === countryName)
             searchPlace(country)
+        }
+        if (hash.startsWith('help')) {
+            showHelp()
         }
     }
 
