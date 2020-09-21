@@ -195,9 +195,9 @@ const initialization = ([pools, countries, countryCapitals, usCountries, interes
         if (pos === null) {
             return
         }
-
         const hasData = popup.search(pos.lat, pos.lng)
         if (hasData) {
+            popup.hide()
             popup.show(event.detail.clientX, event.detail.clientY)
         }
     })
