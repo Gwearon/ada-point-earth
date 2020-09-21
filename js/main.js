@@ -3,14 +3,11 @@ const poolPopup = document.querySelector('#pool-popup')
 const snackbar = document.querySelector('#snackbar')
 const pageSpinner = document.querySelector('#page-spinner')
 
-const initialization = ([pools, countries, countryCapitals, usCountries]) => {
+const initialization = ([pools, countries, countryCapitals, usCountries, interests]) => {
     pageSpinner.classList.remove('hidden')
 
     // fade in elements
     document.querySelectorAll('.fade-initialize').forEach(other => other.classList.add('fade-in'))
-
-    const poolColor = 'rgba(255, 255, 0, 0.8)'
-    const cityColor = '#eeeeee'
 
     // remove same relays on single location as it clogs the interface
     pools = Utils.removeDuplicates(pools, (pool) => {
@@ -96,25 +93,61 @@ const initialization = ([pools, countries, countryCapitals, usCountries]) => {
         }
     })
 
-    const unsortedPlaces = [].concat(placesPools, placesCountries, placesUsRegions, placesCapitals)
+    const placesOfInterests = interests.map(interest => {
+        return {
+            name: interest.name,
+            lat: interest.lat,
+            long: interest.long,
+            type: 'interest',
+            interest: {
+                description: interest.description
+            },
+            geo: {
+                continent: interest.geo.continent,
+                country: interest.geo.country,
+                region: interest.geo.region,
+                city: interest.geo.city
+            }
+        }
+    })
+
+    const unsortedPlaces = [].concat(placesPools, placesCountries, placesUsRegions, placesCapitals, placesOfInterests)
     const order = {
         'country': 1,
         'region': 2,
-        'capital': 3,
-        'pool': 4
+        'interest': 3,
+        'capital': 4,
+        'pool': 5
     }
     const places = unsortedPlaces.sort((a, b) => order[a.type] > order[b.type] ? 1: -1)
 
+    const mapDataParams = {
+        pool: {
+            size: 0.6,
+            dotRadius: 0.3,
+            color: 'rgba(255, 255, 0, 0.8)',
+            altitude: 0.006
+        },
+        capital: {
+            size: 0.4,
+            dotRadius: 0.2,
+            color: '#eeeeee',
+            altitude: 0.006
+        },
+        interest: {
+            size: 0.6,
+            dotRadius: 0.4,
+            color: 'ee0000',
+            altitude: 0.006
+        }
+    }
+
     const mapData = places.filter(place => ['pool', 'capital'].includes(place.type)).map(place => {
-        const isPool = place.type === 'pool'
         return {
-            text: isPool ? '' : place.name,
+            text: place.type === 'pool' ? '' : place.name,
             lat: place.lat,
             long: place.long,
-            size: isPool ? 0.6 : 0.4,
-            dotRadius: isPool ? 0.3 : 0.2,
-            color: isPool ? poolColor : cityColor,
-            altitude: isPool ? 0.006 : 0.0055
+            ...mapDataParams[place.type]
         }
     })
 
@@ -400,5 +433,6 @@ Promise.all([
     window.fetch('relays/augmentedPools.json').then(res => res.json()),
     window.fetch('geodata/countryPolygons.json').then(res => res.json()),
     window.fetch('geodata/country-capitals.json').then(res => res.json()),
-    window.fetch('geodata/us_state_capitals.json').then(res => res.json())
+    window.fetch('geodata/us_state_capitals.json').then(res => res.json()),
+    window.fetch('geodata/interests.json').then(res => res.json()),
 ]).then(initialization)
