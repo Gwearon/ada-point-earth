@@ -7,4 +7,4 @@ WHERE
 pr.update_id = pu.id AND
 pmd.id = pu.meta AND
 pu.hash_id = ph.id AND
-not EXISTS (select pr.update_id from pool_retire pr WHERE pr.update_id = pu.id);
+not EXISTS (select prt.hash_id from pool_retire prt WHERE prt.hash_id = pu.hash_id);
