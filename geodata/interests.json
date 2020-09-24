@@ -1,175 +1,177 @@
-[{
-    "name": "Charles Hoskinson",
-    "lat": 40.0149856,
-    "long": -105.2705456,
-    "type": "interest",
-    "interest": {
-        "description": "Charles Hoskinson is a Colorado-based technology entrepreneur and mathematician. He attended Metropolitan State University of Denver and University of Colorado Boulder to study analytic number theory before moving into cryptography through industry exposure."
+[
+    {
+        "name": "Charles Hoskinson",
+        "lat": 40.0149856,
+        "long": -105.2705456,
+        "type": "interest",
+        "description": "Charles Hoskinson is a Colorado-based technology entrepreneur and mathematician. He attended Metropolitan State University of Denver and University of Colorado Boulder to study analytic number theory before moving into cryptography through industry exposure.",
+        "geo": {
+            "continent": "North America",
+            "country": "United State",
+            "region": "Colorado"
+        }
     },
-    "geo": {
-        "continent": "North America",
-        "country": "United State",
-        "region": "Colorado"
-    }
-}, {
-    "name": "Input Output HK Limited (previously)",
-    "lat": 22.2768186,
-    "long": 114.169039,
-    "type": "interest",
-    "interest": {
-        "description": "Previously the registered office of IOHK."
+    {
+        "name": "Input Output HK Limited (previously)",
+        "lat": 22.2768186,
+        "long": 114.169039,
+        "type": "interest",
+        "description": "Previously the registered office of IOHK.",
+        "geo": {
+            "continent": "Asia",
+            "country": "Hong Kong",
+            "region": "Hong Kong"
+        }
     },
-    "geo": {
-        "continent": "Asia",
-        "country": "Hong Kong",
-        "region": "Hong Kong"
-    }
-}, {
-    "name": "Input Output HK Limited",
-    "lat": 22.2768186,
-    "long": 114.169039,
-    "type": "interest",
-    "interest": {
-        "description": "Current IOHK office."
+    {
+        "name": "Input Output HK Limited",
+        "lat": 22.2768186,
+        "long": 114.169039,
+        "type": "interest",
+        "description": "Current IOHK office.",
+        "geo": {
+            "continent": "Asia",
+            "country": "Hong Kong",
+            "region": "Hong Kong",
+            "city": "Hong Kong"
+        }
     },
-    "geo": {
-        "continent": "Asia",
-        "country": "Hong Kong",
-        "region": "Hong Kong",
-        "city": "Hong Kong"
-    }
-}, {
-    "name": "University of Wyoming",
-    "lat": 41.3144774,
-    "long": -105.56432286,
-    "type": "interest",
-    "interest": {
-        "description": "The University of Wyoming - IOHK Advanced Blockchain Research and Development Lab focuses on Formal Verification, Smart Contracts, and Secure Hardware related to Realworld Blockchain Applications. UW Receives $500,000 Gift in Ada Cryptocurrency from IOHK. "
+    {
+        "name": "University of Wyoming",
+        "lat": 41.3144774,
+        "long": -105.56432286,
+        "type": "interest",
+        "description": "The University of Wyoming - IOHK Advanced Blockchain Research and Development Lab focuses on Formal Verification, Smart Contracts, and Secure Hardware related to Realworld Blockchain Applications. UW Receives $500,000 Gift in Ada Cryptocurrency from IOHK. ",
+        "geo": {
+            "continent": "North America",
+            "country": "United State",
+            "region": "Wyoming",
+            "city": "Laramie"
+        }
     },
-    "geo": {
-        "continent": "North America",
-        "country": "United State",
-        "region": "Wyoming",
-        "city": "Laramie"
-    }
-}, {
-    "name": "Cardano foundation",
-    "lat": 47.1757712,
-    "long": 8.5148637,
-    "type": "interest",
-    "geo": {
-        "continent": "Europe",
-        "country": "Switzerland",
-        "region": "Zug",
-        "city": "Zug"
-    }
-}, {
-    "name": "Emurgo",
-    "lat": 47.1757712,
-    "long": 8.5148637,
-    "type": "interest",
-    "geo": {
-        "continent": "Asia",
-        "country": "Japan"
-    }
-}, {
-    "name": "Sebastien Guillemot",
-    "lat": 47.1757712,
-    "long": 8.5148637,
-    "type": "interest",
-    "interest": {
-        "description": "Sebastien graduated from the University of Victoria with an honors degree in computer science and a minor in math. After working on a few different projects at Microsoft, he decided to join EMURGO as an Engineering Lead where he helps to drive the understanding of the technical parts of the Cardano project."
+    {
+        "name": "Cardano foundation",
+        "lat": 47.1757712,
+        "long": 8.5148637,
+        "type": "interest",
+        "description": "We exist to ensure the positive advancement of the Cardano protocol, while also contributing to the positive advancement of blockchain as a world-changing technology. In everything we do, we enable, empower, facilitate and accelerate progress in the blockchain space. Ultimately, the Cardano Foundation exists to make better a reality.",
+        "geo": {
+            "continent": "Europe",
+            "country": "Switzerland",
+            "region": "Zug",
+            "city": "Zug"
+        }
     },
-    "geo": {
-        "continent": "Asia",
-        "country": "Japan"
-    }
-}, {
-    "name": "Emurgo Singapore",
-    "lat": 1.2831049,
-    "long": 103.85194895,
-    "type": "interest",
-    "geo": {
-        "continent": "Asia",
-        "country": "Singapore",
-        "region": "Singapore",
-        "city": "Singapore"
-    }
-}, {
-    "name": "Emurgo Indonesia",
-    "lat": -6.28381815,
-    "long": 106.80486349,
-    "type": "interest",
-    "geo": {
-        "continent": "Asia",
-        "country": "Indonesia",
-        "city": "Jakarta"
-    }
-}, {
-    "name": "Emurgo India",
-    "lat": 12.9791198,
-    "long": 77.5912997,
-    "type": "interest",
-    "geo": {
-        "continent": "Asia",
-        "country": "India",
-        "region": "Karnataka",
-        "city": "Bengaluru"
-    }
-}, {
-    "name": "University of Edinburgh",
-    "lat": 55.92295837402344,
-    "long": -3.1755833625793457,
-    "type": "interest",
-    "interest": {
-        "description": "IOHK is delighted to be partnering with the University of Edinburgh, a world-leading institution in information, cognition and computing research and teaching. The partnership will develop IOHK’s core business area, cryptocurrencies and blockchain related technologies, and nurture and develop the global talent in these areas in the United Kingdom."
+    {
+        "name": "Emurgo",
+        "lat": 47.1757712,
+        "long": 8.5148637,
+        "type": "interest",
+        "description": "EMURGO is a multinational blockchain technology company providing solutions for developers, startups, enterprises, and governments",
+        "geo": {
+            "continent": "Asia",
+            "country": "Japan"
+        }
     },
-    "geo": {
-        "continent": "Europe",
-        "country": "United Kingdom",
-        "region": "Scotland",
-        "city": "Edinburgh"
-    }
-}, {
-    "name": "Tokyo Institute of Technology",
-    "lat": 35.605038,
-    "long": 139.6827407,
-    "type": "interest",
-    "interest": {
-        "description": "Tokyo Institute of Technology and Input Output HK create the Cryptocurrency Collaborative Research Chair."
+    {
+        "name": "Sebastien Guillemot",
+        "lat": 47.1757712,
+        "long": 8.5148637,
+        "type": "interest",
+        "description": "Sebastien graduated from the University of Victoria with an honors degree in computer science and a minor in math. After working on a few different projects at Microsoft, he decided to join EMURGO as an Engineering Lead where he helps to drive the understanding of the technical parts of the Cardano project.",
+        "geo": {
+            "continent": "Asia",
+            "country": "Japan"
+        }
     },
-    "geo": {
-        "continent": "Asia",
-        "country": "Japan",
-        "region": "Kanto",
-        "city": "Tokyo"
-    }
-}, {
-    "name": "Technical university of Athens",
-    "lat": 37.97945,
-    "long": 23.71622,
-    "type": "interest",
-    "interest": {
-        "description": "Technical university of Athens"
+    {
+        "name": "Emurgo Singapore",
+        "lat": 1.2831049,
+        "long": 103.85194895,
+        "type": "interest",
+        "description": "EMURGO is a multinational blockchain technology company providing solutions for developers, startups, enterprises, and governments",
+        "geo": {
+            "continent": "Asia",
+            "country": "Singapore",
+            "region": "Singapore",
+            "city": "Singapore"
+        }
     },
-    "geo": {
-        "continent": "Europe",
-        "country": "Greece",
-        "region": "Attica",
-        "city": "Athens"
-    }
-}, {
-    "name": "John O'Connor",
-    "lat": 9,
-    "long": 38.75,
-    "type": "interest",
-    "interest": {
-        "description": "John joined IOHK after working for the Cardano Foundation as the Head of Strategy and Communications."
+    {
+        "name": "Emurgo Indonesia",
+        "lat": -6.28381815,
+        "long": 106.80486349,
+        "type": "interest",
+        "description": "EMURGO is a multinational blockchain technology company providing solutions for developers, startups, enterprises, and governments",
+        "geo": {
+            "continent": "Asia",
+            "country": "Indonesia",
+            "city": "Jakarta"
+        }
     },
-    "geo": {
-        "continent": "Africa",
-        "country": "Ethiopia",
-        "region": "Ethiopia",
-        "city": "Addis Ababa"
+    {
+        "name": "Emurgo India",
+        "lat": 12.9791198,
+        "long": 77.5912997,
+        "type": "interest",
+        "description": "EMURGO is a multinational blockchain technology company providing solutions for developers, startups, enterprises, and governments",
+        "geo": {
+            "continent": "Asia",
+            "country": "India",
+            "region": "Karnataka",
+            "city": "Bengaluru"
+        }
+    },
+    {
+        "name": "University of Edinburgh",
+        "lat": 55.92295837402344,
+        "long": -3.1755833625793457,
+        "type": "interest",
+        "description": "IOHK is delighted to be partnering with the University of Edinburgh, a world-leading institution in information, cognition and computing research and teaching. The partnership will develop IOHK’s core business area, cryptocurrencies and blockchain related technologies, and nurture and develop the global talent in these areas in the United Kingdom.",
+        "geo": {
+            "continent": "Europe",
+            "country": "United Kingdom",
+            "region": "Scotland",
+            "city": "Edinburgh"
+        }
+    },
+    {
+        "name": "Tokyo Institute of Technology",
+        "lat": 35.605038,
+        "long": 139.6827407,
+        "type": "interest",
+        "description": "Tokyo Institute of Technology and Input Output HK create the Cryptocurrency Collaborative Research Chair.",
+        "geo": {
+            "continent": "Asia",
+            "country": "Japan",
+            "region": "Kanto",
+            "city": "Tokyo"
+        }
+    },
+    {
+        "name": "Technical university of Athens",
+        "lat": 37.97945,
+        "long": 23.71622,
+        "type": "interest",
+        "description": "Technical university of Athens",
+        "geo": {
+            "continent": "Europe",
+            "country": "Greece",
+            "region": "Attica",
+            "city": "Athens"
+        }
+    },
+    {
+        "name": "John O'Connor",
+        "lat": 9,
+        "long": 38.75,
+        "type": "interest",
+        "description": "John joined IOHK after working for the Cardano Foundation as the Head of Strategy and Communications.",
+        "geo": {
+            "continent": "Africa",
+            "country": "Ethiopia",
+            "region": "Ethiopia",
+            "city": "Addis Ababa"
+        }
     }
-}]
+]

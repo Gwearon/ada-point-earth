@@ -116,6 +116,12 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange, p
                 showDetails(countryPlace)
             })
         }
+        if (place.type === 'interest') {
+            debugger
+            details.innerHTML = `
+                <p>${place.interest.description}.</p>
+            `
+        }
 
         const googleMapsLink = placesPopup.querySelector('.gmaps-link')
         if (googleMapsLink) {

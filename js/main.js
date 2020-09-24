@@ -141,6 +141,8 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
         }
     })
 
+    console.log(placesOfInterests)
+
     const unsortedPlaces = [].concat(placesPools, placesContinents, placesCountries, placesUsRegions, placesCapitals, placesOfInterests)
     const order = {
         'continent': 1,
