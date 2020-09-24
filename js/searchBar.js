@@ -1,4 +1,4 @@
-window.searchBar = (input, places, onSelect) => {
+window.searchBar = (input, places, onSelect, placeTypeEmoji) => {
     autocomplete({
         input,
         fetch: (text, update) => {
@@ -9,7 +9,7 @@ window.searchBar = (input, places, onSelect) => {
 
                 const pool = place.pool
                 if (pool) {
-                    if (pool.ticker && pool.ticker.toLowerCase().startsWith(text)) return true
+                    if (pool.ticker && pool.ticker.toLowerCase().includes(text)) return true
                 }
 
                 const geo = place.geo
@@ -27,9 +27,8 @@ window.searchBar = (input, places, onSelect) => {
         onSelect,
         render: (place, currentValue) => {
             const itemElement = document.createElement("div")
-            const notAPoolPrefix = place.pool ? ``: `🌎 `
             const tickerPostfix = place.pool ? `[${place.pool.ticker}]` : ``
-            const stringOption = `${notAPoolPrefix}${place.name}${tickerPostfix}`
+            const stringOption = `${placeTypeEmoji[place.type]}${place.name}${tickerPostfix}`
             const searchPos = stringOption.toLocaleLowerCase().indexOf(currentValue.toLocaleLowerCase())
             if (searchPos === -1) {
                 itemElement.textContent = stringOption

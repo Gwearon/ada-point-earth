@@ -3,6 +3,14 @@ const poolPopup = document.querySelector('#pool-popup')
 const snackbar = document.querySelector('#snackbar')
 const pageSpinner = document.querySelector('#page-spinner')
 
+const placeTypeEmoji = {
+    'country': '🌎',
+    'region': '🗺️',
+    'interest': '❔',
+    'capital': '🏙️',
+    'pool': ''
+}
+
 const initialization = ([pools, countries, countryCapitals, usCountries, interests]) => {
     pageSpinner.classList.remove('hidden')
 
@@ -50,7 +58,8 @@ const initialization = ([pools, countries, countryCapitals, usCountries, interes
             type: 'capital',
             geo: {
                 continent: 'North America',
-                country: usCountry.name
+                country: 'United States',
+                region: usCountry.name
             }
         }
     })
@@ -64,6 +73,7 @@ const initialization = ([pools, countries, countryCapitals, usCountries, interes
             geo: {
                 continent: country.ContinentName,
                 country: country.CountryName,
+                region: null
             }
         }
     }).concat(placesUsCapitals)
@@ -157,7 +167,8 @@ const initialization = ([pools, countries, countryCapitals, usCountries, interes
         containerBBox: globeDOM.getBoundingClientRect() ,
         places,
         snackbar,
-        onPopupChange
+        onPopupChange,
+        placeTypeEmoji
     })
 
     const globe = Globe({ waitForGlobeReady: true })(globeDOM)
@@ -232,7 +243,7 @@ const initialization = ([pools, countries, countryCapitals, usCountries, interes
     // Search bar
     //
 
-    searchBar(document.querySelector('#search-field input'), places, searchPlace)
+    searchBar(document.querySelector('#search-field input'), places, searchPlace, placeTypeEmoji)
 
     //
     // Simulate random edges
@@ -409,12 +420,12 @@ const initialization = ([pools, countries, countryCapitals, usCountries, interes
         }
         if (hash.startsWith(typeUrlMap.region)) {
             const regionName = decodeURIComponent(hash.substring(typeUrlMap.region.length + 1))
-            const region = places.find(place => place.type === 'region' && place.geo.region === regionName)
+            const region = places.find(place => place.type === 'region' && place.name === regionName)
             searchPlace(region)
         }
         if (hash.startsWith(typeUrlMap.country)) {
             const countryName = decodeURIComponent(hash.substring(typeUrlMap.country.length + 1))
-            const country = places.find(place => place.type === 'country' && place.geo.country === countryName)
+            const country = places.find(place => place.type === 'country' && place.name === countryName)
             searchPlace(country)
         }
         if (hash.startsWith('help')) {

@@ -1,4 +1,4 @@
-window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange }) => {
+window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange, placeTypeEmoji }) => {
     onPopupChange = onPopupChange || function() {}
 
     const history = []
@@ -44,7 +44,7 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange })
                 tickerDOM.textContent = ` [${place.pool.ticker}]`
                 placeDOM.appendChild(tickerDOM)
             } else {
-                boldDOM.textContent = `🌎 ` + boldDOM.textContent
+                boldDOM.textContent = placeTypeEmoji[place.type] + ' ' + boldDOM.textContent
             }
 
             Utils.clickListener(placeDOM, () => { callback(place) })
@@ -65,7 +65,7 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange })
         Utils.clickListener(backButton, back)
 
         const titleDOM = placesPopup.querySelector('.title')
-        const sufix = place.pool ? ` [${place.pool.ticker}]` : ''
+        const sufix = place.pool ? ` [${place.pool.ticker}]` : ` ${placeTypeEmoji[place.type]}`
         titleDOM.textContent = `${place.name}${sufix}`
 
         const details = placesPopup.querySelector('.details')
@@ -104,7 +104,7 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange })
             })
             list.append.apply(list, countryPlacesLis)
 
-            titleDOM.textContent = `${titleDOM.textContent} (${countryPlacesLis.length}) 🌎`
+            titleDOM.textContent = `${titleDOM.textContent} (${countryPlacesLis.length})`
         }
         if (place.type === 'capital') {
             details.innerHTML = `
