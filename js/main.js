@@ -3,6 +3,12 @@ const poolPopup = document.querySelector('#pool-popup')
 const snackbar = document.querySelector('#snackbar')
 const pageSpinner = document.querySelector('#page-spinner')
 
+const globeImages = {
+    blue: '/img/earth-blue-marble.jpg',
+    night: '/img/earth-night.jpg'
+}
+const globeImagesDefault = 'blue'
+
 const placeTypeEmoji = {
     'continent': '🌎',
     'country': '🌎',
@@ -186,7 +192,7 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
     })
 
     const globe = Globe({ waitForGlobeReady: true })(globeDOM)
-        .globeImageUrl('/img/earth-blue-marble.jpg')
+        .globeImageUrl(globeImages.blue)
         .backgroundImageUrl('/img/night-sky.png')
         .bumpImageUrl('/img/earth-topology.png')
 
@@ -258,6 +264,35 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
     //
 
     searchBar(document.querySelector('#search-field input'), places, searchPlace, placeTypeEmoji)
+
+    //
+    // Light switch
+    //
+
+    const globeNightButton = document.querySelector('#app-globe-night')
+    let globeNight = false
+
+    const updateGlobeNight = () => {
+        globe.globeImageUrl(globeImages[globeNight ? 'night': globeImagesDefault])
+    }
+
+    Utils.clickListener(globeNightButton, () => {
+        globeNight = !globeNight
+
+        updateGlobeNight()
+
+        var data = {
+            message: `Let there be ${globeNight ? `n`: `l`}ight.`,
+            timeout: 2000
+        }
+
+        globeNightButton.classList[globeNight ? 'remove' : 'add']('on')
+
+        if (!snackbar.MaterialSnackbar.active) {
+            snackbar.MaterialSnackbar.showSnackbar(data)
+        }
+    })
+    updateGlobeNight()
 
     //
     // Simulate random edges
