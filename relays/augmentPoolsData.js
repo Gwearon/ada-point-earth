@@ -1,4 +1,3 @@
-const os = require("os")
 const fs = require('fs')
 const requestPromise = require('request-promise')
 const nsLookup = require('nslookup')
@@ -19,6 +18,15 @@ const pools = require(poolsPath).rows.slice(startOffset, endOffset)
 
 const sleep = () => { return new Promise(resolve => setTimeout(resolve, 500)) }
 const isIp = str => { return /^(([1-9]?\d|1\d\d|2[0-4]\d|25[0-5])(\.(?!$)|$)){4}$/.test(str) }
+const getHumanReadableHash = poolHash => poolHash.substring(2)
+const isValidJSONString = JSONString => {
+    try {
+        JSON.parse(JSONString);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
 const outputError = e => { if (e) console.log(e) }
 
 const getIp = (dnsOrIp, dns_srv_name) => {
@@ -77,7 +85,7 @@ const getAugmentedPoolData = async (pool, retry) => {
 
         const cPool = {...pool}
         // remove first 3 chars "\\x153806dbcd134ddee69a8c5204e38ac80448f62342f8c23cfe4b7edf"
-        cPool.hash = pool.hash.substring(2)
+        cPool.hash = getHumanReadableHash(pool.hash)
 
         return {
             ...cPool,
@@ -102,10 +110,14 @@ const mapSeries = async (pools) => {
     for (const [i, pool] of pools.entries()) {
         let augmentedPool = null
         try {
-            augmentedPool = await getAugmentedPoolData(pool, 1); // try twice
+            augmentedPool = await getAugmentedPoolData(pool, 1) // try twice
             augmentedPool.index = i
+
+            if (isValidJSONString(augmentedPool.meta)) {
+                throw new Error('Invalid metadata: not in JSON format.')
+            }
         } catch (e) {
-            fs.appendFileSync(errorsLogPath, [pool.hash, ' ', e.message, os.EOL].join(''), encoding, outputError)
+            fs.appendFileSync(errorsLogPath, [getHumanReadableHash(pool.hash), ' ', e.message, '\n'].join(''), encoding, outputError)
         }
 
         await sleep() // do some sleep to not overload the sys with requests
