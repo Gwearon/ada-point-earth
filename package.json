@@ -7,7 +7,9 @@
         "nslookup": "^1.1.1",
         "request-promise": "^4.2.6"
     },
-    "devDependencies": {},
+    "devDependencies": {
+        "request": "^2.88.2"
+    },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"
     },

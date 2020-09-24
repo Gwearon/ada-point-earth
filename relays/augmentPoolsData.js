@@ -6,9 +6,9 @@ const nsLookup = require('nslookup')
 const continents = require(__dirname + '/../geodata/continents.json')
 const countries = require(__dirname + '/../geodata/countries.json')
 
-const poolsPath = __dirname + '/pools.json';
+const poolsPath = __dirname + '/pools.json'
 const augmentedPoolsPath = __dirname + '/augmentedPools.json'
-const errorsLogPath = __dirname + "../errors.log"
+const errorsLogPath = __dirname + "/../errors.log"
 const encoding = 'utf8'
 
 const myArgs = process.argv.slice(2);
