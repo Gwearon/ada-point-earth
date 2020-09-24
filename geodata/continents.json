@@ -1,9 +1,37 @@
 {
-  "AF": "Africa",
-  "AN": "Antarctica",
-  "AS": "Asia",
-  "EU": "Europe",
-  "NA": "North America",
-  "OC": "Oceania",
-  "SA": "South America"
+    "AF": {
+        "name": "Africa",
+        "lat": 11.5024338,
+        "long": 17.7578122
+    },
+    "AN": {
+        "name": "Antarctica",
+        "lat": -79.4063075,
+        "long": 0.3149312
+    },
+    "AS": {
+        "name": "Asia",
+        "lat": 51.2086975,
+        "long": 89.2343748
+    },
+    "EU": {
+        "name": "Europe",
+        "lat": 51,
+        "long": 10
+    },
+    "NA": {
+        "name": "North America",
+        "lat": 51.0000002,
+        "long": -109.0000002
+    },
+    "OC": {
+        "name": "Oceania",
+        "lat": -18.3128,
+        "long": 138.5156
+    },
+    "SA": {
+        "name": "South America",
+        "lat": -21.0002179,
+        "long": -61.0006565
+    }
 }

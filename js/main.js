@@ -4,6 +4,7 @@ const snackbar = document.querySelector('#snackbar')
 const pageSpinner = document.querySelector('#page-spinner')
 
 const placeTypeEmoji = {
+    'continent': '🌎',
     'country': '🌎',
     'region': '🗺️',
     'interest': '❔',
@@ -11,7 +12,7 @@ const placeTypeEmoji = {
     'pool': ''
 }
 
-const initialization = ([pools, countries, countryCapitals, usCountries, interests]) => {
+const initialization = ([pools, continents, countries, countryCapitals, usCountries, interests]) => {
     pageSpinner.classList.remove('hidden')
 
     // fade in elements
@@ -33,6 +34,18 @@ const initialization = ([pools, countries, countryCapitals, usCountries, interes
                 continent: 'North America',
                 country: usCountry.name,
                 region: usCountry.region
+            }
+        }
+    })
+
+    const placesContinents = Object.values(continents).map(continent => {
+        return {
+            name: continent.name,
+            lat: continent.lat,
+            long: continent.long,
+            type: 'continent',
+            geo: {
+                continent: continent.name
             }
         }
     })
@@ -121,13 +134,14 @@ const initialization = ([pools, countries, countryCapitals, usCountries, interes
         }
     })
 
-    const unsortedPlaces = [].concat(placesPools, placesCountries, placesUsRegions, placesCapitals, placesOfInterests)
+    const unsortedPlaces = [].concat(placesPools, placesContinents, placesCountries, placesUsRegions, placesCapitals, placesOfInterests)
     const order = {
-        'country': 1,
-        'region': 2,
-        'interest': 3,
-        'capital': 4,
-        'pool': 5
+        'continent': 1,
+        'country': 2,
+        'region': 3,
+        'interest': 4,
+        'capital': 5,
+        'pool': 6
     }
     const places = unsortedPlaces.sort((a, b) => order[a.type] > order[b.type] ? 1: -1)
 
@@ -442,6 +456,7 @@ const initialization = ([pools, countries, countryCapitals, usCountries, interes
 
 Promise.all([
     window.fetch('relays/augmentedPools.json').then(res => res.json()),
+    window.fetch('geodata/continents.json').then(res => res.json()),
     window.fetch('geodata/countryPolygons.json').then(res => res.json()),
     window.fetch('geodata/country-capitals.json').then(res => res.json()),
     window.fetch('geodata/us_state_capitals.json').then(res => res.json()),

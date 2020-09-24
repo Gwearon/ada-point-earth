@@ -90,7 +90,7 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange, p
             details.querySelector('.adapool').href = `https://adapools.org/pool/${place.pool.hash}`
             details.querySelector('.pooltool').href = `https://pooltool.io/pool/${place.pool.hash}`
         }
-        if (['country', 'region'].includes(place.type)) {
+        if (['continent', 'country', 'region'].includes(place.type)) {
             const geoType = place.type
 
             details.innerHTML = `
@@ -162,6 +162,11 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange, p
             const countryPlace = places.find(place => place.type === 'country' && place.name === firstPool.geo.country)
             countryPlace && placesFiltered.unshift(countryPlace)
         }
+        const hasContinent = placesFiltered.find(place => place.type === 'continent')
+        if (firstPool && !hasContinent) {
+            const continentPlace = places.find(place => place.type === 'continent' && place.name === firstPool.geo.continent)
+            continentPlace && placesFiltered.unshift(continentPlace)
+        }
 
         placesPopup.innerHTML = `
             <header><i class="back material-icons">arrow_back_ios</i><span class="title"></span></header><br/>
@@ -188,7 +193,7 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange, p
     }
 
     const searchPlace = (searchPlace) => {
-        if (['pool', 'region', 'country'].includes(searchPlace.type)) {
+        if (['pool', 'region', 'country', 'continent'].includes(searchPlace.type)) {
             showDetails(searchPlace)
             return true;
         }

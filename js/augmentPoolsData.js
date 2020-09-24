@@ -70,7 +70,7 @@ const getAugmentedPoolData = async (pool, retry) => {
 
         try {
             // augment with continent information
-            geo.continent = continents[countries[geo.code].continent]
+            geo.continent = continents[countries[geo.code].continent].name
         } catch {
             geo.continent = ''
         }

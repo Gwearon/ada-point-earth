@@ -6,6 +6,8 @@
     border: 1px solid rgba(50, 50, 50, 0.6);
     max-height: 50% !important;
     border-radius: 0 0 5px 5px;
+
+    overflow-x: none;
 }
 
 .autocomplete::-webkit-scrollbar {
