@@ -5,7 +5,7 @@ window.searchBar = (input, places, onSelect, placeTypeEmoji) => {
             text = text.toLowerCase();
             // you can also use AJAX requests instead of preloaded data
             const suggestions = places.filter(place => {
-                if (place.name && place.name.toLowerCase().startsWith(text)) return true
+                if (place.name && place.name.toLowerCase().includes(text)) return true
 
                 const pool = place.pool
                 if (pool) {

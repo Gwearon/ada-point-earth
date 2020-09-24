@@ -199,7 +199,7 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange, p
     }
 
     const searchPlace = (searchPlace) => {
-        if (['pool', 'region', 'country', 'continent'].includes(searchPlace.type)) {
+        if (['interest', 'pool', 'region', 'country', 'continent'].includes(searchPlace.type)) {
             showDetails(searchPlace)
             return true;
         }
