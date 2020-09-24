@@ -2,6 +2,7 @@ const popupClickTarget = document.querySelector('#popup-click-target')
 const poolPopup = document.querySelector('#pool-popup')
 const snackbar = document.querySelector('#snackbar')
 const pageSpinner = document.querySelector('#page-spinner')
+const globeAnimateButton = document.querySelector('#app-animate')
 
 const globeImages = {
     blue: '/img/earth-blue-marble.jpg',
@@ -238,9 +239,9 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
     })
 
     const controls = globe.controls()
-    Utils.clickListener(globeDOM, () => { controls.autoRotate = false })
-    controls.autoRotate = true
+    Utils.clickListener(globeDOM, stopGlobeAnimation)
     controls.enableKeys = true
+    startGlobeAnimation()
 
     const searchPlace = (place) => {
         const hasData = popup.searchPlace(place)
@@ -248,7 +249,7 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
             return;
         }
         popup.hide()
-        controls.autoRotate = false
+        stopGlobeAnimation()
 
         setTimeout(() => {
             globe.pointOfView({ lat: place.lat, lng: place.long, altitude: 1 })
@@ -264,6 +265,39 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
     //
 
     searchBar(document.querySelector('#search-field input'), places, searchPlace, placeTypeEmoji)
+
+    //
+    // Animate
+    //
+    function startGlobeAnimation() {
+        controls.autoRotate = true
+        updateGlobeAnimate()
+    }
+
+    function stopGlobeAnimation() {
+        controls.autoRotate = false
+        updateGlobeAnimate()
+    }
+
+    function updateGlobeAnimate() {
+        globeAnimateButton.querySelector('i').textContent = controls.autoRotate ? 'pause' : 'play_arrow'
+        globeAnimateButton.querySelector('.label').textContent = controls.autoRotate ? 'Pause' : 'Play'
+    }
+
+    Utils.clickListener(globeAnimateButton, () => {
+        controls.autoRotate = !controls.autoRotate
+        controls.autoRotate ? startGlobeAnimation() : stopGlobeAnimation()
+
+        var data = {
+            message: `Globe animation ${controls.autoRotate ? `enabled`: `disabled`}.`,
+            timeout: 2000
+        }
+
+        if (!snackbar.MaterialSnackbar.active) {
+            snackbar.MaterialSnackbar.showSnackbar(data)
+        }
+    })
+    updateGlobeAnimate()
 
     //
     // Light switch

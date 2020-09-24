@@ -72,6 +72,13 @@ body {
     opacity: 1;
 }
 
+#app-animate {
+    position: absolute;
+    top: 57px;
+    right: 20px;
+    color: white;
+}
+
 #app-globe-night {
     position: absolute;
     top: 20px;
