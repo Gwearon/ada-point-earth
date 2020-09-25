@@ -45,6 +45,9 @@ body {
     vertical-align: middle;
     cursor: pointer;
 }
+#places-popup header i.share:hover {
+    color: #81ca91;
+}
 #places-popup ul.places {
     padding-left: 0;
     margin: 0;
@@ -141,6 +144,29 @@ body {
     color: #fff;
 }
 #app-help-card .mdl-button-get-started {
+    float: right;
+}
+
+#app-share-dialog {
+    position: absolute;
+    width: 512px;
+    left: 50%;
+    top: 50%;
+    margin-left: -256px;
+    margin-top: -150px;
+}
+#app-share-dialog.hidden {
+    display: none;
+}
+#app-share-dialog > .mdl-card__title {
+    color: #fff;
+    height: 176px;
+    background: url('../img/banner_right.png') center / cover;
+}
+#app-share-dialog > .mdl-card__menu {
+    color: #fff;
+}
+#app-share-dialog .mdl-button-get-started {
     float: right;
 }
 

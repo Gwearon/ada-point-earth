@@ -191,6 +191,7 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
         places,
         snackbar,
         onPopupChange,
+        onPlaceShare,
         placeTypeEmoji
     })
 
@@ -267,6 +268,42 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
     //
 
     searchBar(document.querySelector('#search-field input'), places, searchPlace, placeTypeEmoji)
+
+    //
+    // Share dialog
+    //
+    const shareDialogButton = document.querySelector('#app-share-dialog-button')
+    const dialog = document.querySelector('#app-share-dialog')
+    const closeButton = dialog.querySelector('.mdl-button-get-started')
+    const facebookShareButton = dialog.querySelector('.facebook-share')
+    const twitterShareButton = dialog.querySelector('.twitter-share')
+    const copyShareButton = dialog.querySelector('.copy-share')
+
+    function showShareDialog() {
+        dialog.classList.remove('hidden')
+        onUrlChange('share')
+    }
+    function closeShareDialog() {
+        dialog.classList.add('hidden')
+        onUrlChange()
+    }
+    Utils.clickListener(shareDialogButton, showHelp)
+    Utils.clickListener(closeShareDialog, closeHelp)
+
+    Utils.clickListener(facebookShareButton, () => {
+        const place = getPlaceFromUrlHash()
+    })
+    Utils.clickListener(twitterShareButton, () => {
+        const place = getPlaceFromUrlHash()
+        VanillaSharing.tw({
+            url: document.location.href,
+            title: place.name,
+            hashtags: ['cardano', 'cardano' + place.type.charAt(0).toUpperCase() + place.type.slice(1), 'AdaPointPool'],
+        })
+    })
+    Utils.clickListener(copyShareButton, () => {
+        const place = getPlaceFromUrlHash()
+    })
 
     //
     // Animate
@@ -474,7 +511,8 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
         pool: 'pools',
         region: 'regions',
         country: 'countries',
-        continent: 'continents'
+        continent: 'continents',
+        interest: 'interests'
     }
 
     function onUrlChange(newHash) {
@@ -483,6 +521,10 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
             return
         }
         history.replaceState(null, null, document.location.pathname + '#' + newHash)
+    }
+
+    function onPlaceShare(place) {
+        showShareDialog()
     }
 
     function onPopupChange(place) {
@@ -498,23 +540,31 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
         history.replaceState(null, null, document.location.pathname + '#' + hash)
     }
 
+    const getPlaceFromUrlHash = (hash) => {
+        const type = Object.keys().find(type => hash.startsWith(typeUrlMap[type]))
+        if (!type) {
+            return null
+        }
+
+        const comparePlaceHash = (place, placeHash) => {
+            return place.type === 'pool' ? place.pool.hash === placeHash : place.name === placeHash
+        }
+
+        const placeHash = decodeURIComponent(hash.substring(typeUrlMap[type].length + 1))
+        const place = places.find(place => place.type === type && comparePlaceHash(place, placeHash))
+
+        return place
+    }
+
     const showPage = function(hash) {
-        if (hash.startsWith(typeUrlMap.pool)) {
-            const poolHash = decodeURIComponent(hash.substring(typeUrlMap.pool.length + 1))
-            const pool = places.find(place => place.type === 'pool' && place.pool.hash === poolHash)
-            searchPlace(pool)
-        }
-        if (hash.startsWith(typeUrlMap.region)) {
-            const regionName = decodeURIComponent(hash.substring(typeUrlMap.region.length + 1))
-            const region = places.find(place => place.type === 'region' && place.name === regionName)
-            searchPlace(region)
-        }
-        if (hash.startsWith(typeUrlMap.country)) {
-            const countryName = decodeURIComponent(hash.substring(typeUrlMap.country.length + 1))
-            const country = places.find(place => place.type === 'country' && place.name === countryName)
-            searchPlace(country)
+        const place = getPlaceFromUrlHash(hash)
+        if (place) {
+            searchPlace(place)
         }
         if (hash.startsWith('help')) {
+            showHelp()
+        }
+        if (hash.startsWith('share')) {
             showHelp()
         }
     }

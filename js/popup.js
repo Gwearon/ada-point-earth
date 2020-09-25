@@ -1,4 +1,4 @@
-window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange, placeTypeEmoji }) => {
+window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange, onPlaceShare, placeTypeEmoji }) => {
     onPopupChange = onPopupChange || function() {}
 
     const history = []
@@ -57,7 +57,7 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange, p
         const searchArguments = ['showDetails', place]
 
         placesPopup.innerHTML = `
-            <header><i class="back material-icons">arrow_back_ios</i><span class="title"></span></header><br/>
+            <header><i class="back material-icons">arrow_back_ios</i><span class="title"></span>&nbsp;<i class="share material-icons">share</i></header><br/>
             <div class="details"></div>
         `
 
@@ -125,6 +125,13 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange, p
         const googleMapsLink = placesPopup.querySelector('.gmaps-link')
         if (googleMapsLink) {
             googleMapsLink.href = `https://maps.google.com/?q=${place.lat},${place.long}`
+        }
+
+        const shareLink = placesPopup.querySelector('.share')
+        if (shareLink) {
+            Utils.clickListener(shareLink, () => {
+                onPlaceShare(place)
+            })
         }
 
         onPopupChange(place)
