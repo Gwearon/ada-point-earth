@@ -272,37 +272,59 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
     //
     // Share dialog
     //
-    const shareDialogButton = document.querySelector('#app-share-dialog-button')
-    const dialog = document.querySelector('#app-share-dialog')
-    const closeButton = dialog.querySelector('.mdl-button-get-started')
-    const facebookShareButton = dialog.querySelector('.facebook-share')
-    const twitterShareButton = dialog.querySelector('.twitter-share')
-    const copyShareButton = dialog.querySelector('.copy-share')
+    const shareDialogButton = document.querySelector('#app-share')
+    const shareDialog = document.querySelector('#app-share-dialog')
+    const shareDialogCloseButton = shareDialog.querySelector('.mdl-button-get-started')
+    const facebookShareButton = shareDialog.querySelector('.facebook-share')
+    const twitterShareButton = shareDialog.querySelector('.twitter-share')
+    const copyShareButton = shareDialog.querySelector('.copy-share')
 
     function showShareDialog() {
-        dialog.classList.remove('hidden')
-        onUrlChange('share')
+        shareDialog.classList.remove('hidden')
     }
     function closeShareDialog() {
-        dialog.classList.add('hidden')
-        onUrlChange()
+        shareDialog.classList.add('hidden')
     }
-    Utils.clickListener(shareDialogButton, showHelp)
-    Utils.clickListener(closeShareDialog, closeHelp)
+    Utils.clickListener(shareDialogButton, showShareDialog)
+    Utils.clickListener(shareDialogCloseButton, closeShareDialog)
+
+    const copyUrlToClipboard = (text) => {
+        var textArea = document.createElement("textarea")
+        textArea.value = text
+        document.body.appendChild(textArea)
+        textArea.select()
+        document.execCommand("Copy")
+        textArea.remove()
+
+        var data = {
+            message: `Url copied. Paste it wherever you want to share it.`,
+            timeout: 2000
+        }
+
+        if (!snackbar.MaterialSnackbar.active) {
+            snackbar.MaterialSnackbar.showSnackbar(data)
+        }
+    }
 
     Utils.clickListener(facebookShareButton, () => {
-        const place = getPlaceFromUrlHash()
-    })
-    Utils.clickListener(twitterShareButton, () => {
-        const place = getPlaceFromUrlHash()
+        onUrlChange('share')
+
+        const place = getPlaceFromUrlHash(location.hash.substring(1))
+        if (!place) {
+            copyUrlToClipboard(window.location.href)
+            return
+        }
         VanillaSharing.tw({
-            url: document.location.href,
-            title: place.name,
+            url: window.location.href,
+            title: `Cardano planet Earth - ${place.name}`,
             hashtags: ['cardano', 'cardano' + place.type.charAt(0).toUpperCase() + place.type.slice(1), 'AdaPointPool'],
         })
     })
+    Utils.clickListener(twitterShareButton, () => {
+        VanillaSharing.fbButton({ url: document.location.href })
+    })
     Utils.clickListener(copyShareButton, () => {
-        const place = getPlaceFromUrlHash()
+        copyUrlToClipboard(window.location.href)
     })
 
     //
@@ -491,14 +513,14 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
     //
 
     const helpButton = document.querySelector('#app-help')
-    const dialog = document.querySelector('#app-help-card')
-    const closeButton = dialog.querySelector('.mdl-button-get-started')
+    const helpDialog = document.querySelector('#app-help-card')
+    const closeButton = helpDialog.querySelector('.mdl-button-get-started')
     const showHelp = () => {
-        dialog.classList.remove('hidden')
+        helpDialog.classList.remove('hidden')
         onUrlChange('help')
     }
     const closeHelp = () => {
-        dialog.classList.add('hidden')
+        helpDialog.classList.add('hidden')
         onUrlChange()
     }
     Utils.clickListener(helpButton, showHelp)
@@ -541,7 +563,7 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
     }
 
     const getPlaceFromUrlHash = (hash) => {
-        const type = Object.keys().find(type => hash.startsWith(typeUrlMap[type]))
+        const type = Object.keys(typeUrlMap).find(type => hash.startsWith(typeUrlMap[type]))
         if (!type) {
             return null
         }
@@ -565,7 +587,7 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
             showHelp()
         }
         if (hash.startsWith('share')) {
-            showHelp()
+            showShareDialog()
         }
     }
 

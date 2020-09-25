@@ -75,6 +75,17 @@ body {
     opacity: 1;
 }
 
+#app-globe-night {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: white;
+}
+
+#app-globe-night.on {
+    color: grey;
+}
+
 #app-animate {
     position: absolute;
     top: 57px;
@@ -82,14 +93,11 @@ body {
     color: white;
 }
 
-#app-globe-night {
+#app-share {
     position: absolute;
-    top: 20px;
+    top: 94px;
     right: 20px;
     color: white;
-}
-#app-globe-night.on {
-    color: grey;
 }
 
 #app-simulate-edges-labels {
