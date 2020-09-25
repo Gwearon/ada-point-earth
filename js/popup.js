@@ -17,8 +17,8 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange, p
         const availableWidth = maxPageX - (containerBBox.left + x);
 
         setTimeout(() => {
-            const top = y - (availableHeight / 0.7 < placesPopup.offsetHeight ? placesPopup.offsetHeight + 5 : -5)
-            const left = x - (availableWidth < placesPopup.offsetWidth ? placesPopup.offsetWidth + 5 : -5)
+            const top = y - (availableHeight / 0.7 < placesPopup.offsetHeight ? placesPopup.offsetHeight + 30 : 20)
+            const left = x - (availableWidth < placesPopup.offsetWidth ? placesPopup.offsetWidth + 0 : -10)
 
             if (availableHeight / 0.7 >= placesPopup.offsetHeight) {
                 placesPopup.style.maxHeight = availableHeight - 100
@@ -117,7 +117,6 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange, p
             })
         }
         if (place.type === 'interest') {
-            debugger
             details.innerHTML = `
                 <p>${place.interest.description}.</p>
             `

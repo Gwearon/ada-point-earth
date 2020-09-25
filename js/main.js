@@ -30,6 +30,8 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
         return [pool.meta.ticker, pool.geo.lat, pool.geo.long].join('_')
     })
 
+    const abcSort = Utils.propAbcSort('name')
+
     // create common structure
     const placesUsRegions = Object.values(usCountries).map(usCountry => {
         return {
@@ -43,7 +45,7 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
                 region: usCountry.region
             }
         }
-    })
+    }).sort(abcSort)
 
     const placesContinents = Object.values(continents).map(continent => {
         return {
@@ -55,7 +57,7 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
                 continent: continent.name
             }
         }
-    })
+    }).sort(abcSort)
 
     const placesCountries = countryCapitals.map(country => {
         return {
@@ -68,7 +70,7 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
                 country: country.CountryName
             }
         }
-    })
+    }).sort(abcSort)
 
     const placesUsCapitals = Object.values(usCountries).map(usCountry => {
         return {
@@ -96,7 +98,7 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
                 region: null
             }
         }
-    }).concat(placesUsCapitals)
+    }).concat(placesUsCapitals).sort(Utils.abcSort)
 
     const placesPools = pools.map(pool => {
         return {
@@ -121,7 +123,7 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
                 city: pool.geo.city
             }
         }
-    })
+    }).sort(abcSort)
 
     const placesOfInterests = interests.map(interest => {
         return {
@@ -139,9 +141,7 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
                 city: interest.geo.city
             }
         }
-    })
-
-    console.log(placesOfInterests)
+    }).sort(abcSort)
 
     const unsortedPlaces = [].concat(placesPools, placesContinents, placesCountries, placesUsRegions, placesCapitals, placesOfInterests)
     const order = {
@@ -473,7 +473,8 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
     const typeUrlMap = {
         pool: 'pools',
         region: 'regions',
-        country: 'countries'
+        country: 'countries',
+        continent: 'continents'
     }
 
     function onUrlChange(newHash) {
