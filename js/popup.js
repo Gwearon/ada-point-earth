@@ -1,4 +1,4 @@
-window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange, onPlaceShare, placeTypeEmoji }) => {
+window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange, onPlaceShare, placeTypeEmoji, searchPlaceMain }) => {
     onPopupChange = onPopupChange || function() {}
 
     const history = []
@@ -100,7 +100,7 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange, o
             const countryPlaces = places.filter(currentPlace => currentPlace.type === 'pool' && currentPlace.geo && currentPlace.geo[geoType] === place.name)
             const countryPlacesLis = createPlacesList(countryPlaces, (place) => {
                 history.push(searchArguments)
-                showDetails(place)
+                searchPlaceMain(place)
             })
             list.append.apply(list, countryPlacesLis)
 
@@ -193,7 +193,7 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange, o
         const placesDOM = placesPopup.querySelector('ul')
         placesDOM.append.apply(placesDOM, createPlacesList(placesFiltered, (place) => {
             history.push(searchArguments)
-            showDetails(place)
+            searchPlaceMain(place)
         }))
 
         if (placesFiltered.length) {

@@ -192,7 +192,8 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
         snackbar,
         onPopupChange,
         onPlaceShare,
-        placeTypeEmoji
+        placeTypeEmoji,
+        searchPlaceMain: searchPlace
     })
 
     const globe = Globe({ waitForGlobeReady: true })(globeDOM)
@@ -246,7 +247,7 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
     controls.enableKeys = true
     startGlobeAnimation()
 
-    const searchPlace = (place) => {
+    function searchPlace(place) {
         const hasData = popup.searchPlace(place)
         if (!hasData) {
             return;
