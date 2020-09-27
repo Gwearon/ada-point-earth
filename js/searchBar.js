@@ -20,6 +20,16 @@ window.searchBar = (input, places, onSelect, placeTypeEmoji) => {
                     if (geo.city && geo.city.toLowerCase().startsWith(text)) return true
                 }
 
+                const pluralToSingular = {
+                    'continents': 'continent',
+                    'countries': 'country',
+                    'regions': 'region',
+                    'interests': 'interest',
+                    'capitals': 'capital'
+                }
+                textFixedPlural = !!pluralToSingular[text] ? pluralToSingular[text] : text
+                if (place.type.startsWith(textFixedPlural)) return true
+
                 return false
             })
             update(suggestions);
