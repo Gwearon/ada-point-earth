@@ -1,14 +1,12 @@
 {
     "name": "shelley-globe",
     "version": "0.7.1",
-    "description": "List of Shelley locations.",
+    "description": "Visuallization of Cardano pools and related geo information.",
     "main": "index.html",
-    "dependencies": {
-        "nslookup": "^1.1.1",
-        "request-promise": "^4.2.6"
-    },
     "devDependencies": {
-        "request": "^2.88.2"
+        "nslookup": "^1.1.1",
+        "request": "^2.88.2",
+        "request-promise": "^4.2.6"
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1"

@@ -75,28 +75,33 @@ body {
     opacity: 1;
 }
 
-#app-globe-night {
+#top-right-drawer {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 130px;
+    height: 145px;
+}
+
+#top-right-drawer #app-globe-night {
     position: absolute;
     top: 20px;
-    right: 20px;
+    left: 0px;
     color: white;
 }
-
-#app-globe-night.on {
+#top-right-drawer #app-globe-night.on {
     color: grey;
 }
-
-#app-animate {
+#top-right-drawer #app-animate {
     position: absolute;
     top: 57px;
-    right: 20px;
+    left: 0px;
     color: white;
 }
-
-#app-share {
+#top-right-drawer #app-share {
     position: absolute;
     top: 94px;
-    right: 20px;
+    left: 0px;
     color: white;
 }
 
