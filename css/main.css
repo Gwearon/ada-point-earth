@@ -139,6 +139,7 @@ body {
     top: 50%;
     margin-left: -256px;
     margin-top: -150px;
+    z-index: 1000;
 }
 #app-help-card.hidden {
     display: none;
@@ -146,7 +147,7 @@ body {
 #app-help-card > .mdl-card__title {
     color: #fff;
     height: 176px;
-    background: url('../img/banner_right.png') center / cover;
+    background: url('../img/banner-right.png') center / cover;
 }
 #app-help-card > .mdl-card__menu {
     color: #fff;
@@ -162,6 +163,7 @@ body {
     top: 50%;
     margin-left: -256px;
     margin-top: -150px;
+    z-index: 1001;
 }
 #app-share-dialog.hidden {
     display: none;
@@ -169,7 +171,7 @@ body {
 #app-share-dialog > .mdl-card__title {
     color: #fff;
     height: 176px;
-    background: url('../img/banner_right.png') center / cover;
+    background: url('../img/banner-night-share-dialog.png') center;
 }
 #app-share-dialog > .mdl-card__menu {
     color: #fff;

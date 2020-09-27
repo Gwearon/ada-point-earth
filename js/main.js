@@ -306,21 +306,21 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
         }
     }
 
-    Utils.clickListener(facebookShareButton, () => {
-        onUrlChange('share')
-
+    Utils.clickListener(twitterShareButton, () => {
         const place = getPlaceFromUrlHash(location.hash.substring(1))
-        if (!place) {
-            copyUrlToClipboard(window.location.href)
-            return
+
+        const hashtags =  ['cardano']
+        if (place) {
+            hashtags.push('cardano' + place.type.charAt(0).toUpperCase() + place.type.slice(1), 'AdaPointPool')
         }
+
         VanillaSharing.tw({
             url: window.location.href,
-            title: `Cardano planet Earth - ${place.name}`,
-            hashtags: ['cardano', 'cardano' + place.type.charAt(0).toUpperCase() + place.type.slice(1), 'AdaPointPool'],
+            title: `Cardano planet Earth` + (place ? ' - ' + place.name : ''),
+            hashtags
         })
     })
-    Utils.clickListener(twitterShareButton, () => {
+    Utils.clickListener(facebookShareButton, () => {
         VanillaSharing.fbButton({ url: document.location.href })
     })
     Utils.clickListener(copyShareButton, () => {
