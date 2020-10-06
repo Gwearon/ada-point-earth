@@ -5,8 +5,8 @@ const pageSpinner = document.querySelector('#page-spinner')
 const globeAnimateButton = document.querySelector('#app-animate')
 
 const globeImages = {
-    blue: '/img/earth-blue-marble.jpg',
-    night: '/img/earth-night.jpg'
+    blue: 'img/earth-blue-marble.jpg',
+    night: 'img/earth-night.jpg'
 }
 const globeImagesDefault = 'blue'
 
