@@ -30,7 +30,7 @@ node relats/augmentPoolsData.js
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 ## License
-[MIT](https://github.com/Gwearon/network-globe/blob/master/LICENSE)
+[MIT](https://github.com/Gwearon/ada-point-earth/blob/master/LICENSE)
 
 ## Using
 
