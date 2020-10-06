@@ -197,8 +197,8 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
 
     const globe = Globe({ waitForGlobeReady: true })(globeDOM)
         .globeImageUrl(globeImages.blue)
-        .backgroundImageUrl('/img/night-sky.png')
-        .bumpImageUrl('/img/earth-topology.png')
+        .backgroundImageUrl('img/night-sky.png')
+        .bumpImageUrl('img/earth-topology.png')
 
         .labelsData(mapData)
         .labelLat('lat')
