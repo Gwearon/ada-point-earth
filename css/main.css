@@ -6,6 +6,8 @@ body {
     color: #444a50 !important;
 }
 
+html, body { margin: 0; height: 100%; overflow: hidden; }
+
 #search-field {
     position: absolute;
     width: 300px;
@@ -31,11 +33,17 @@ body {
 #places-popup {
     display: none;
     position: absolute;
-    overflow-y: auto;
-    padding: 10px;
     z-index: 11;
     background-color: white;
     border-radius: 5px;
+    max-width: 40%;
+}
+
+#places-popup-inner {
+    padding: 15px;
+    overflow-y: auto;
+    border-radius: 5px;
+    max-height: 40%;
 }
 #places-popup header {
     font-size: 21px;
@@ -51,6 +59,7 @@ body {
 #places-popup ul.places {
     padding-left: 0;
     margin: 0;
+    list-style: none;
 }
 #places-popup ul.places li {
     cursor: pointer;
@@ -152,7 +161,7 @@ body {
 #app-help-card > .mdl-card__title {
     color: #fff;
     height: 176px;
-    background: url('../img/banner-right.png') center / cover;
+    background: url('../img/banner-night-share-dialog.png') center / cover;
 }
 #app-help-card > .mdl-card__menu {
     color: #fff;

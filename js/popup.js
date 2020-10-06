@@ -1,5 +1,9 @@
-window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange, onPlaceShare, placeTypeEmoji, searchPlaceMain }) => {
+window.Popup = ({ placesPopup, places, snackbar, onPopupChange, onPlaceShare, placeTypeEmoji, searchPlaceMain }) => {
     onPopupChange = onPopupChange || function() {}
+
+    const placesPopupInner = document.createElement('div')
+    placesPopupInner.id = 'places-popup-inner'
+    placesPopup.append(placesPopupInner)
 
     const history = []
 
@@ -11,23 +15,9 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange, o
         }
         isShown = true
 
-        const maxPageX = window.pageXOffset + window.innerWidth;
-        const maxPageY = window.pageYOffset + window.innerHeight;
-        const availableHeight = maxPageY - (containerBBox.top + y);
-        const availableWidth = maxPageX - (containerBBox.left + x);
-
-        setTimeout(() => {
-            const top = y - (availableHeight / 0.7 < placesPopup.offsetHeight ? placesPopup.offsetHeight + 30 : 20)
-            const left = x - (availableWidth < placesPopup.offsetWidth ? placesPopup.offsetWidth + 0 : -10)
-
-            if (availableHeight / 0.7 >= placesPopup.offsetHeight) {
-                placesPopup.style.maxHeight = availableHeight - 100
-            }
-
-            placesPopup.style.top = top + 'px'
-            placesPopup.style.left = left + 'px'
-            placesPopup.style.display = 'block'
-        }, 0)
+        placesPopup.style.top = (y - 26) + 'px'
+        placesPopup.style.left = (x + 11) + 'px'
+        placesPopup.style.display = 'block'
     }
 
     const createPlacesList = (selectedPlaces, callback) => {
@@ -56,19 +46,19 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange, o
     const showDetails = (place) => {
         const searchArguments = ['showDetails', place]
 
-        placesPopup.innerHTML = `
+        placesPopupInner.innerHTML = `
             <header><i class="back material-icons">arrow_back_ios</i><span class="title"></span>&nbsp;<i class="share material-icons">share</i></header><br/>
             <div class="details"></div>
         `
 
-        const backButton = placesPopup.querySelector('.back')
+        const backButton = placesPopupInner.querySelector('.back')
         Utils.clickListener(backButton, back)
 
-        const titleDOM = placesPopup.querySelector('.title')
+        const titleDOM = placesPopupInner.querySelector('.title')
         const sufix = place.pool ? ` [${place.pool.ticker}]` : ` ${placeTypeEmoji[place.type]}`
         titleDOM.textContent = `${place.name}${sufix}`
 
-        const details = placesPopup.querySelector('.details')
+        const details = placesPopupInner.querySelector('.details')
         if (place.type === 'pool') {
             details.innerHTML = `
                 <p class="description"></p>
@@ -100,7 +90,7 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange, o
             const countryPlaces = places.filter(currentPlace => currentPlace.type === 'pool' && currentPlace.geo && currentPlace.geo[geoType] === place.name)
             const countryPlacesLis = createPlacesList(countryPlaces, (place) => {
                 history.push(searchArguments)
-                searchPlaceMain(place)
+                searchPlaceMain(place, true)
             })
             list.append.apply(list, countryPlacesLis)
 
@@ -122,12 +112,12 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange, o
             `
         }
 
-        const googleMapsLink = placesPopup.querySelector('.gmaps-link')
+        const googleMapsLink = placesPopupInner.querySelector('.gmaps-link')
         if (googleMapsLink) {
             googleMapsLink.href = `https://maps.google.com/?q=${place.lat},${place.long}`
         }
 
-        const shareLink = placesPopup.querySelector('.share')
+        const shareLink = placesPopupInner.querySelector('.share')
         if (shareLink) {
             Utils.clickListener(shareLink, () => {
                 onPlaceShare(place)
@@ -180,25 +170,25 @@ window.Popup = ({ placesPopup, containerBBox, places, snackbar, onPopupChange, o
             continentPlace && placesFiltered.unshift(continentPlace)
         }
 
-        placesPopup.innerHTML = `
+        placesPopupInner.innerHTML = `
             <header><i class="back material-icons">arrow_back_ios</i><span class="title"></span></header><br/>
             <ul class="places"></ul>
         `
 
-        const backButton = placesPopup.querySelector('.back')
+        const backButton = placesPopupInner.querySelector('.back')
         Utils.clickListener(backButton, back)
 
         const numPools = placesFiltered.filter(place => place.type === 'pool')
-        placesPopup.querySelector('.title').innerText = `Places in click radius. (${numPools.length})`
-        const placesDOM = placesPopup.querySelector('ul')
+        placesPopupInner.querySelector('.title').innerText = `Places in click radius. (${numPools.length})`
+        const placesDOM = placesPopupInner.querySelector('ul')
         placesDOM.append.apply(placesDOM, createPlacesList(placesFiltered, (place) => {
             history.push(searchArguments)
-            searchPlaceMain(place)
+            searchPlaceMain(place, true)
         }))
 
         if (placesFiltered.length) {
             onPopupChange()
-            placesPopup.appendChild(placesDOM)
+            placesPopupInner.appendChild(placesDOM)
             return true
         }
         return true

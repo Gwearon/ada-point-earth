@@ -187,7 +187,6 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
     const globeDOM = document.querySelector('#globe')
     const popup = Popup({ 
         placesPopup: document.querySelector('#places-popup'),
-        containerBBox: globeDOM.getBoundingClientRect() ,
         places,
         snackbar,
         onPopupChange,
@@ -247,12 +246,14 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
     controls.enableKeys = true
     startGlobeAnimation()
 
-    function searchPlace(place) {
+    function searchPlace(place, noHide) {
         const hasData = popup.searchPlace(place)
         if (!hasData) {
             return;
         }
-        popup.hide()
+        if (!noHide) {
+            popup.hide()
+        }
         stopGlobeAnimation()
 
         setTimeout(() => {
