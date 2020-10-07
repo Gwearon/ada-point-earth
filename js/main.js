@@ -246,14 +246,12 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
     controls.enableKeys = true
     startGlobeAnimation()
 
-    function searchPlace(place, noHide) {
+    function searchPlace(place, noHistory) {
         const hasData = popup.searchPlace(place)
         if (!hasData) {
             return;
         }
-        if (!noHide) {
-            popup.hide()
-        }
+        popup.hide(noHistory)
         stopGlobeAnimation()
 
         setTimeout(() => {
