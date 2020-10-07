@@ -180,9 +180,18 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
             text: place.type === 'pool' ? '' : place.name,
             lat: place.lat,
             long: place.long,
+            type: place.type,
             ...mapDataParams[place.type]
         }
     })
+
+    const mapDataReduce = mapData.reduce((mappedLocations, curr) => {
+        const notMapped = mappedLocations.every(loc => Utils.haversineDistance(loc, curr) > 50)
+        if (notMapped || curr.type === 'capital') {
+            mappedLocations.push(curr)
+        }
+        return mappedLocations
+    }, [])
 
     const globeDOM = document.querySelector('#globe')
     const popup = Popup({ 
@@ -200,7 +209,7 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
         .backgroundImageUrl('img/night-sky.png')
         .bumpImageUrl('img/earth-topology.png')
 
-        .labelsData(mapData)
+        .labelsData(mapDataReduce)
         .labelLat('lat')
         .labelLng('long')
         .labelText('text')
