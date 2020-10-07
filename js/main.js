@@ -4,6 +4,8 @@ const snackbar = document.querySelector('#snackbar')
 const pageSpinner = document.querySelector('#page-spinner')
 const globeAnimateButton = document.querySelector('#app-animate')
 
+const isMobile = Utils.mobileCheck()
+
 const globeImages = {
     blue: 'img/earth-blue-marble.jpg',
     night: 'img/earth-night.jpg'
@@ -630,11 +632,23 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
     showPage(location.hash.substring(1));
 }
 
-Promise.all([
-    window.fetch('relays/augmentedPools.json').then(res => res.json()),
-    window.fetch('geodata/continents.json').then(res => res.json()),
-    window.fetch('geodata/countryPolygons.json').then(res => res.json()),
-    window.fetch('geodata/country-capitals.json').then(res => res.json()),
-    window.fetch('geodata/us_state_capitals.json').then(res => res.json()),
-    window.fetch('geodata/interests.json').then(res => res.json()),
-]).then(initialization)
+const bootstrap = () => {
+    Promise.all([
+        window.fetch('relays/augmentedPools.json').then(res => res.json()),
+        window.fetch('geodata/continents.json').then(res => res.json()),
+        window.fetch('geodata/countryPolygons.json').then(res => res.json()),
+        window.fetch('geodata/country-capitals.json').then(res => res.json()),
+        window.fetch('geodata/us_state_capitals.json').then(res => res.json()),
+        window.fetch('geodata/interests.json').then(res => res.json()),
+    ]).then(initialization)
+}
+
+if (isMobile) {
+    bootstrap()
+} else {
+    document.querySelector('#app-mobile-card').classList.remove('hidden')
+    Utils.clickListener(document.querySelector('.mdl-button-try-it'), () => {
+        bootstrap()
+        document.querySelector('#app-mobile-card').classList.add('hidden')
+    })
+}

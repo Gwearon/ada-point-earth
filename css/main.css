@@ -191,6 +191,24 @@ html, body { margin: 0; height: 100%; overflow: hidden; }
     float: right;
 }
 
+#app-mobile-card {
+    position: absolute;
+    width: 512px;
+    left: 50%;
+    top: 50%;
+    margin-left: -256px;
+    margin-top: -150px;
+    z-index: 1001;
+}
+#app-mobile-card.hidden {
+    display: none;
+}
+#app-mobile-card > .mdl-card__title {
+    color: #fff;
+    height: 176px;
+    background: url('../img/banner-night-share-dialog.png') center;
+}
+
 ::-webkit-scrollbar {
     width: 10px;
     background-color: #c9c9cb;
