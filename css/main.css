@@ -37,14 +37,11 @@ html, body { margin: 0; height: 100%; overflow: hidden; }
     background-color: white;
     border-radius: 5px;
     max-width: 40%;
-}
-
-#places-popup-inner {
+    max-height: 40%;
     padding: 15px;
     overflow-y: auto;
-    border-radius: 5px;
-    max-height: 40%;
 }
+
 #places-popup header {
     font-size: 21px;
     font-weight: 900;

@@ -1,10 +1,6 @@
 window.Popup = ({ placesPopup, places, snackbar, onPopupChange, onPlaceShare, placeTypeEmoji, searchPlaceMain }) => {
     onPopupChange = onPopupChange || function() {}
 
-    const placesPopupInner = document.createElement('div')
-    placesPopupInner.id = 'places-popup-inner'
-    placesPopup.append(placesPopupInner)
-
     const history = []
 
     let isShown = false
@@ -46,19 +42,19 @@ window.Popup = ({ placesPopup, places, snackbar, onPopupChange, onPlaceShare, pl
     const showDetails = (place) => {
         const searchArguments = ['showDetails', place]
 
-        placesPopupInner.innerHTML = `
+        placesPopup.innerHTML = `
             <header><i class="back material-icons">arrow_back_ios</i><span class="title"></span>&nbsp;<i class="share material-icons">share</i></header><br/>
             <div class="details"></div>
         `
 
-        const backButton = placesPopupInner.querySelector('.back')
+        const backButton = placesPopup.querySelector('.back')
         Utils.clickListener(backButton, back)
 
-        const titleDOM = placesPopupInner.querySelector('.title')
+        const titleDOM = placesPopup.querySelector('.title')
         const sufix = place.pool ? ` [${place.pool.ticker}]` : ` ${placeTypeEmoji[place.type]}`
         titleDOM.textContent = `${place.name}${sufix}`
 
-        const details = placesPopupInner.querySelector('.details')
+        const details = placesPopup.querySelector('.details')
         if (place.type === 'pool') {
             details.innerHTML = `
                 <p class="description"></p>
@@ -112,12 +108,12 @@ window.Popup = ({ placesPopup, places, snackbar, onPopupChange, onPlaceShare, pl
             `
         }
 
-        const googleMapsLink = placesPopupInner.querySelector('.gmaps-link')
+        const googleMapsLink = placesPopup.querySelector('.gmaps-link')
         if (googleMapsLink) {
             googleMapsLink.href = `https://maps.google.com/?q=${place.lat},${place.long}`
         }
 
-        const shareLink = placesPopupInner.querySelector('.share')
+        const shareLink = placesPopup.querySelector('.share')
         if (shareLink) {
             Utils.clickListener(shareLink, () => {
                 onPlaceShare(place)
@@ -170,17 +166,17 @@ window.Popup = ({ placesPopup, places, snackbar, onPopupChange, onPlaceShare, pl
             continentPlace && placesFiltered.unshift(continentPlace)
         }
 
-        placesPopupInner.innerHTML = `
+        placesPopup.innerHTML = `
             <header><i class="back material-icons">arrow_back_ios</i><span class="title"></span></header><br/>
             <ul class="places"></ul>
         `
 
-        const backButton = placesPopupInner.querySelector('.back')
+        const backButton = placesPopup.querySelector('.back')
         Utils.clickListener(backButton, back)
 
         const numPools = placesFiltered.filter(place => place.type === 'pool')
-        placesPopupInner.querySelector('.title').innerText = `Places in click radius. (${numPools.length})`
-        const placesDOM = placesPopupInner.querySelector('ul')
+        placesPopup.querySelector('.title').innerText = `Places in click radius. (${numPools.length})`
+        const placesDOM = placesPopup.querySelector('ul')
         placesDOM.append.apply(placesDOM, createPlacesList(placesFiltered, (place) => {
             history.push(searchArguments)
             searchPlaceMain(place, true)
@@ -188,28 +184,30 @@ window.Popup = ({ placesPopup, places, snackbar, onPopupChange, onPlaceShare, pl
 
         if (placesFiltered.length) {
             onPopupChange()
-            placesPopupInner.appendChild(placesDOM)
+            placesPopup.appendChild(placesDOM)
             return true
         }
         return true
     }
 
     const searchPlace = (searchPlace) => {
-        if (['interest', 'pool', 'region', 'country', 'continent'].includes(searchPlace.type)) {
+        if (['interest', 'pool', 'region', 'country', 'continent', 'capital'].includes(searchPlace.type)) {
             showDetails(searchPlace)
             return true;
         }
         return search(searchPlace.lat, searchPlace.long)
     }
 
-    const hide = () => {
+    const hide = (noHistory) => {
         if (!isShown) {
             return
         }
         isShown = false
 
         placesPopup.style.display = 'none';
-        onPopupChange()
+        if (!noHistory) {
+            onPopupChange()
+        }
     }
 
     const interface = {
