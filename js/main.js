@@ -643,7 +643,7 @@ const bootstrap = () => {
     ]).then(initialization)
 }
 
-if (isMobile) {
+if (!isMobile) {
     bootstrap()
 } else {
     document.querySelector('#app-mobile-card').classList.remove('hidden')
