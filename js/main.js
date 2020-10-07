@@ -157,7 +157,7 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
     const mapDataParams = {
         pool: {
             size: 0.6,
-            dotRadius: 0.3,
+            dotRadius: 0.2,
             color: 'rgba(255, 255, 0, 0.8)',
             altitude: 0.006
         },
@@ -181,17 +181,40 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
             lat: place.lat,
             long: place.long,
             type: place.type,
-            ...mapDataParams[place.type]
+            ...mapDataParams[place.type],
+            numPools: 1
         }
     })
 
+    // reduce data so one dot represents multiple pools for performance related reasons
+    let maxNumPools = 0
     const mapDataReduce = mapData.reduce((mappedLocations, curr) => {
-        const notMapped = mappedLocations.every(loc => Utils.haversineDistance(loc, curr) > 50)
-        if (notMapped || curr.type === 'capital') {
+        if (curr.type === 'capital') {
+            mappedLocations.push(curr)
+            return mappedLocations
+        }
+
+        const notMapped = mappedLocations.every(loc => {
+            if (Utils.haversineDistance(loc, curr) > 50) {
+                loc.numPools++
+                maxNumPools = Math.max(maxNumPools, loc.numPools)
+                return true
+            }
+            return false
+        })
+        if (notMapped) {
             mappedLocations.push(curr)
         }
         return mappedLocations
     }, [])
+
+    mapDataReduce.map(mapData => {
+        const increasedDotSize = mapData
+        if (mapData.type === 'pool') {
+            increasedDotSize.dotRadius = increasedDotSize.dotRadius + 0.6 * (increasedDotSize.numPools / maxNumPools)
+        }
+        return mapData
+    })
 
     const globeDOM = document.querySelector('#globe')
     const popup = Popup({ 
