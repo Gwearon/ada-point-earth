@@ -93,8 +93,9 @@ window.Popup = ({ placesPopup, places, snackbar, onPopupChange, onPlaceShare, pl
             titleDOM.textContent = `${titleDOM.textContent} (${countryPlacesLis.length})`
         }
         if (place.type === 'capital') {
+            let capitalOf = place.geo.country === 'United States' && place.name !== 'Washington' ? place.geo.region : place.geo.country
             details.innerHTML = `
-                <ul class="places"><li>Capital of ${place.geo.country}.</li></ul>
+                <ul class="places"><li>Capital of ${capitalOf}.</li></ul>
             `
             const countryPlace = places.find(currentPlace => ['country', 'region'].includes(currentPlace.type) && currentPlace.name === place.geo.country)
             Utils.clickListener(details.querySelector('li'), () => {
