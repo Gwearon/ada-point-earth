@@ -197,6 +197,9 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
         }
 
         const notMapped = mappedLocations.every(loc => {
+            if (loc.type === 'capital') {
+                return true
+            }
             if (Utils.haversineDistance(loc, curr) > 50) {
                 loc.numPools++
                 maxNumPools = Math.max(maxNumPools, loc.numPools)
