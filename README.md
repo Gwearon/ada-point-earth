@@ -23,7 +23,7 @@ Open index.html in browser.
 Parse scripts:
 
 ```bash
-node relats/augmentPoolsData.js
+node relays/augmentPoolsData.js
 ```
 
 ## Contributing
