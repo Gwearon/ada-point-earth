@@ -14,7 +14,7 @@ const endOffset = !!myArgs[1] ? myArgs[1]: Infinity
 
 const blockfrostAPIKey = process.env.BLOCKFROST_API_KEY
 const blockfrostAPIURL = 'https://cardano-mainnet.blockfrost.io/api/v0'
-const augmentedPoolsPath = __dirname + '/blockfrostPools.json'
+const augmentedPoolsPath = __dirname + '/pools.json'
 const errorsLogPath = __dirname + "/../blockfrostPools-errors.log"
 const encoding = 'utf8'
 
@@ -31,8 +31,6 @@ const getPools = async (page = 1) => await get('/pools', page)
 const getPool = async (poolId) => await get(`/pools/${poolId}`)
 const getPoolRelays = async (poolId) => await get(`/pools/${poolId}/relays`)
 const getPoolMetadata = async (poolId) => await get(`/pools/${poolId}/metadata`)
-
-const getHumanReadableHash = (poolHash) => poolHash && poolHash.startsWith('pool') ? poolHash.substring(4) : poolHash
 
 const getAllPools = async () => {
     let pools = []
@@ -63,8 +61,8 @@ const getPoolRelayInformation = (poolDetails, poolMetadata, poolRelay) => {
     poolRelayInformation.pledge = poolDetails.declared_pledge
     poolRelayInformation.margin = poolDetails.margin_cost
     poolRelayInformation.fixed_cost = poolDetails.fixed_cost
+    poolRelayInformation.hash = poolDetails.hex
 
-    poolRelayInformation.hash = '\\x' + getHumanReadableHash(poolMetadata.pool_id)
     poolRelayInformation.url = poolMetadata.url
 
     return poolRelayInformation
