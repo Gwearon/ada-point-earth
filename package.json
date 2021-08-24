@@ -4,6 +4,7 @@
     "description": "Visuallization of Cardano pools and related geo information.",
     "main": "index.html",
     "devDependencies": {
+        "dotenv": "^10.0.0",
         "nslookup": "^1.1.1",
         "request": "^2.88.2",
         "request-promise": "^4.2.6"
