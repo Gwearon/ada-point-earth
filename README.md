@@ -17,14 +17,29 @@ npm install --only=dev
 
 ## Usage
 
-Frontend: 
-Open index.html in browser.
+### Frontend
 
-Parse scripts:
+Open `index.html` in the browser.
+
+### Parsing data
+
+#### Cardano db sync (Option 1)
+
+See `relays/pools.sql` and export as json if you are using `cardano-db-sync`.
 
 ```bash
-node relats/augmentPoolsData.js
+npm run augment-pools-data.js
 ```
+
+### Blockfrost (Option 2)
+
+Provide `.env` file with your [blockfrost](https://blockfrost.io) key.
+
+```bash
+BLOCKFROST_API_KEY=<your blockforst API key>
+```
+
+Run `npm run build`.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
@@ -34,7 +49,9 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 
 ## Using
 
-- Graph QL: https://github.com/input-output-hk/cardano-graphql
-- Graph QL schemas: https://input-output-hk.github.io/cardano-graphql/
+- Graph QL: https://github.com/input-output-hk/cardano-graphql (Option 1)
+- Graph QL schemas: https://input-output-hk.github.io/cardano-graphql/ (Option 1)
+- Blockfrost: https://blockfrost.io (Option 2)
+
 - Ip geolocation: https://ipgeolocation.io/
 - Geodata: https://github.com/annexare/Countries/tree/master/data/countries.json

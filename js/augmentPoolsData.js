@@ -77,7 +77,7 @@ const getAugmentedPoolData = async (pool, retry) => {
 
         const cPool = {...pool}
         // remove first 3 chars "\\x153806dbcd134ddee69a8c5204e38ac80448f62342f8c23cfe4b7edf"
-        cPool.hash = pool.hash.substring(2)
+        cPool.hash = pool.hash.startsWith('\\x') ? pool.hash.substring(2): pool.hash
 
         return {
             ...cPool,
@@ -109,7 +109,7 @@ const mapSeries = async (pools) => {
         }
 
         await sleep() // do some sleep to not overload the sys with requests
-        console.log(i + '/' + pools.length + ' (' + Math.floor(i / pools.length * 100) + '%)')
+        console.log((i + 1) + '/' + pools.length + ' (' + Math.floor((i + 1) / pools.length * 100) + '%)')
         if (augmentedPool) {
             fs.appendFileSync(augmentedPoolsPath, (i || startOffset ? ', ' : '') + JSON.stringify(augmentedPool), encoding, outputError);
         }
