@@ -119,7 +119,7 @@ const initialization = ([pools, continents, countries, countryCapitals, usCountr
                 hash: pool.hash
             },
             geo: {
-                continent: pool.geo.continent,
+                continent: pool.geo.continent.name,
                 country: pool.geo.country,
                 region: pool.geo.region,
                 city: pool.geo.city
