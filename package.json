@@ -10,6 +10,9 @@
         "request-promise": "^4.2.6"
     },
     "scripts": {
+        "fetch-blockfrost-pools-data": "node relays/fetchBlockfrostPoolsData.js",
+        "augment-pools-data": "node relays/augmentPoolsData.js",
+        "build": "npm run fetch-blockfrost-pools-data && npm run augment-pools-data",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "Gwearon",

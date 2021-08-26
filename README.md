@@ -27,6 +27,10 @@ Open `index.html` in the browser.
 
 See `relays/pools.sql` and export as json if you are using `cardano-db-sync`.
 
+```bash
+npm run augment-pools-data.js
+```
+
 ### Blockfrost (Option 2)
 
 Provide `.env` file with your [blockfrost](https://blockfrost.io) key.
@@ -35,22 +39,7 @@ Provide `.env` file with your [blockfrost](https://blockfrost.io) key.
 BLOCKFROST_API_KEY=<your blockforst API key>
 ```
 
-### Augmenting data
-
-After using cardano db sync or blockfrost fetcher augment the relay data with location information.
-
-```bash
-relays/fetchBlockforstPoolsData.js`
-```
-
-Parse scripts:
-
-- see `relays/pools.sql` and export as json if you are using `cardano-db-sync`.
-- if using blockfrost `relays/pools.sql` and export as json if you are using `cardano-db-sync`.
-
-```bash
-node relays/augmentPoolsData.js
-```
+Run `npm run build`.
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
