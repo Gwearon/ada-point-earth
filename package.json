@@ -1,7 +1,7 @@
 {
     "name": "shelley-globe",
     "version": "0.7.1",
-    "description": "Visuallization of Cardano pools and related geo information.",
+    "description": "Visualization of Cardano pools and related geo information.",
     "main": "index.html",
     "devDependencies": {
         "dotenv": "^10.0.0",
@@ -13,5 +13,5 @@
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "Gwearon",
-    "license": "ISC"
+    "license": "MIT"
 }
